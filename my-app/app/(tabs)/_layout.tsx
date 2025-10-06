@@ -1,3 +1,4 @@
+import { Feather } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 
 export default function TabsLayout() {
@@ -13,6 +14,9 @@ export default function TabsLayout() {
         options={{
           title: "Início",
           tabBarLabel: "Início",
+          tabBarIcon: ({ color, size }) => (
+            <Feather name="home" color={color} size={size} />
+          ),
         }}
       />
       <Tabs.Screen
@@ -20,6 +24,9 @@ export default function TabsLayout() {
         options={{
           title: "Análises",
           tabBarLabel: "Análises",
+          tabBarIcon: ({ color, size }) => (
+            <Feather name="bar-chart-2" color={color} size={size} />
+          ),
         }}
       />
       <Tabs.Screen
@@ -27,6 +34,9 @@ export default function TabsLayout() {
         options={{
           title: "Ajustes",
           tabBarLabel: "Ajustes",
+          tabBarIcon: ({ color, size }) => (
+            <Feather name="settings" color={color} size={size} />
+          ),
         }}
       />
     </Tabs>
