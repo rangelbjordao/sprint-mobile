@@ -1,6 +1,12 @@
 import { Entypo, Feather } from "@expo/vector-icons";
 import React from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const IndexScreen = () => {
@@ -13,7 +19,7 @@ const IndexScreen = () => {
           Veja como seu bem-estar digital está hoje.
         </Text>
 
-        {/* Card de humor */}
+        {/* Card de humor atual*/}
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Seu Humor Atual</Text>
           <View style={styles.containerHumor}>
@@ -25,7 +31,7 @@ const IndexScreen = () => {
           </Text>
         </View>
 
-        {/* Card de resumo */}
+        {/* Card de resumo do consumo*/}
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Resumo do Consumo</Text>
           <View style={styles.section}>
@@ -36,19 +42,19 @@ const IndexScreen = () => {
             <View style={styles.barraAnalise}>
               <View
                 style={[
-                  styles.progressBarSegment,
+                  styles.barraAnaliserSegment,
                   { flex: 40, backgroundColor: "#50C878" },
                 ]}
               />
               <View
                 style={[
-                  styles.progressBarSegment,
+                  styles.barraAnaliserSegment,
                   { flex: 40, backgroundColor: "#A9A9A9" },
                 ]}
               />
               <View
                 style={[
-                  styles.progressBarSegment,
+                  styles.barraAnaliserSegment,
                   { flex: 20, backgroundColor: "#E97451" },
                 ]}
               />
@@ -58,19 +64,19 @@ const IndexScreen = () => {
                 <Text style={styles.legendText}>
                   <View
                     style={[styles.legendDot, { backgroundColor: "#50C878" }]}
-                  />{" "}
+                  />
                   Positivas
                 </Text>
                 <Text style={styles.legendText}>
                   <View
                     style={[styles.legendDot, { backgroundColor: "#A9A9A9" }]}
-                  />{" "}
+                  />
                   Neutras
                 </Text>
                 <Text style={styles.legendText}>
                   <View
                     style={[styles.legendDot, { backgroundColor: "#E97451" }]}
-                  />{" "}
+                  />
                   Negativas
                 </Text>
               </View>
@@ -92,6 +98,24 @@ const IndexScreen = () => {
               </View>
             </View>
           </View>
+        </View>
+
+        {/* Card de recomendacao */}
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>Recomendação do Dia</Text>
+          <Feather
+            name="alert-circle"
+            size={24}
+            color="#D0021B"
+            style={{ marginBottom: 8 }}
+          />
+          <Text>
+            Notamos um aumento no consumo de notícias negativas hoje. Que tal
+            equilibrar com uma playlist mais calma?
+          </Text>
+          <TouchableOpacity style={styles.button}>
+            <Text style={styles.buttonText}>Ver Playlist Relaxante</Text>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -158,7 +182,7 @@ const styles = StyleSheet.create({
     color: "#007bff",
     marginLeft: 8,
   },
-  progressBarSegment: {},
+  barraAnaliserSegment: {},
   legendContainer: {
     flexDirection: "row",
     justifyContent: "space-around",
@@ -179,6 +203,18 @@ const styles = StyleSheet.create({
   },
   musicStat: {
     fontSize: 14,
+    fontWeight: "bold",
+  },
+  button: {
+    backgroundColor: "#4A90E2",
+    paddingVertical: 12,
+    borderRadius: 8,
+    marginTop: 16,
+    alignItems: "center",
+  },
+  buttonText: {
+    color: "#FFFFFF",
+    fontSize: 16,
     fontWeight: "bold",
   },
 });
