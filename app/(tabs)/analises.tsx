@@ -15,21 +15,21 @@ const AnalisesScreen = () => {
         </Text>
 
         <CardNavegacao
-          href="/musicAnalysis"
+          href="/pagsAnalises/analiseMusicas"
           icon={<FontAwesome5 name="spotify" size={32} color="#1DB954" />}
           title="Análise de Músicas"
           description="Veja a energia e positividade das suas playlists."
         />
 
         <CardNavegacao
-          href="/newsAnalysis"
+          href="/pagsAnalises/analiseNoticias"
           icon={<Feather name="book-open" size={32} color="#4A90E2" />}
           title="Análise de Notícias"
           description="Entenda o sentimento do conteúdo que você lê."
         />
 
         <CardNavegacao
-          href="/journal"
+          href="/pagsAnalises/diario"
           icon={<Feather name="edit-3" size={32} color="#E97451" />}
           title="Diário de Humor"
           description="Acesse e adicione registros ao seu diário pessoal."
