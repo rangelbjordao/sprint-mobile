@@ -11,7 +11,7 @@ const IndexScreen = () => {
     <SafeAreaView style={styles.safeArea}>
       <ScrollView style={styles.container}>
         {/* Header */}
-        <Text style={styles.title}>Olá!</Text>
+        <Text style={styles.title}>Olá!, Usuario</Text>
         <Text style={styles.subtitle}>
           Veja como seu bem-estar digital está hoje.
         </Text>
