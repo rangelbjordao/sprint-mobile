@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Feather, FontAwesome5 } from "@expo/vector-icons";
-import CardNavegacao from "../components/analises/CardNavegacao";
+import CardNavegacao from "../../components/analises/CardNavegacao";
 
 const AnalisesScreen = () => {
   return (
@@ -15,21 +15,21 @@ const AnalisesScreen = () => {
         </Text>
 
         <CardNavegacao
-          href="/pagsAnalises/analiseMusicas"
+          href="/(tabs)/analises/noticias"
           icon={<FontAwesome5 name="spotify" size={32} color="#1DB954" />}
           title="Análise de Músicas"
           description="Veja a energia e positividade das suas playlists."
         />
 
         <CardNavegacao
-          href="/pagsAnalises/analiseNoticias"
+          href="/(tabs)/analises/noticias"
           icon={<Feather name="book-open" size={32} color="#4A90E2" />}
           title="Análise de Notícias"
           description="Entenda o sentimento do conteúdo que você lê."
         />
 
         <CardNavegacao
-          href="/pagsAnalises/diario"
+          href="/(tabs)/analises/noticias"
           icon={<Feather name="edit-3" size={32} color="#E97451" />}
           title="Diário de Humor"
           description="Acesse e adicione registros ao seu diário pessoal."

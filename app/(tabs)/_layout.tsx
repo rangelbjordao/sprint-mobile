@@ -1,5 +1,5 @@
 import { Feather } from "@expo/vector-icons";
-import { Tabs } from "expo-router";
+import { router, Tabs } from "expo-router";
 
 export default function TabsLayout() {
   return (
@@ -8,6 +8,16 @@ export default function TabsLayout() {
         tabBarActiveTintColor: "#007bff",
         tabBarInactiveTintColor: "#999",
         headerShown: false,
+      }}
+      screenListeners={{
+        tabPress: (e) => {
+          // Verifica se a aba clicada é "analises"
+          const tabName = e.target?.toString();
+          if (tabName?.includes("analises")) {
+            e.preventDefault(); // impede comportamento padrão
+            router.replace("/(tabs)/analises"); // força voltar para o hub
+          }
+        },
       }}
     >
       <Tabs.Screen
