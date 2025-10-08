@@ -1,10 +1,10 @@
 import React from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import CardHumorAtual from "./home/components/CardHumorAtual";
-import CardHumorSemana from "./home/components/CardHumorSemana";
-import CardRecomendacao from "./home/components/CardRecomendacao";
-import CardResumoConsumo from "./home/components/CardResumoConsumo";
+import CardHumorAtual from "../components/home/CardHumorAtual";
+import CardHumorSemana from "../components/home/CardHumorSemana";
+import CardRecomendacao from "../components/home/CardRecomendacao";
+import CardResumoConsumo from "../components/home/CardResumoConsumo";
 
 const IndexScreen = () => {
   return (
