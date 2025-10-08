@@ -15,7 +15,7 @@ const AnalisesScreen = () => {
         </Text>
 
         <CardNavegacao
-          href="/(tabs)/analises/noticias"
+          href="/(tabs)/analises/musicas"
           icon={<FontAwesome5 name="spotify" size={32} color="#1DB954" />}
           title="Análise de Músicas"
           description="Veja a energia e positividade das suas playlists."
@@ -29,7 +29,7 @@ const AnalisesScreen = () => {
         />
 
         <CardNavegacao
-          href="/(tabs)/analises/noticias"
+          href="/(tabs)/analises/diario"
           icon={<Feather name="edit-3" size={32} color="#E97451" />}
           title="Diário de Humor"
           description="Acesse e adicione registros ao seu diário pessoal."

@@ -11,11 +11,10 @@ export default function TabsLayout() {
       }}
       screenListeners={{
         tabPress: (e) => {
-          // Verifica se a aba clicada é "analises"
           const tabName = e.target?.toString();
           if (tabName?.includes("analises")) {
-            e.preventDefault(); // impede comportamento padrão
-            router.replace("/(tabs)/analises"); // força voltar para o hub
+            e.preventDefault();
+            router.replace("/(tabs)/analises");
           }
         },
       }}
