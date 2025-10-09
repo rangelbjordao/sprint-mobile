@@ -17,7 +17,7 @@ export default function CardHumorSemana() {
     if (valor <= 30) {
       return (
         <MaterialCommunityIcons
-          name="emoticon-angry-outline"
+          name="emoticon-sad-outline"
           size={32}
           color="#E63946"
         />
