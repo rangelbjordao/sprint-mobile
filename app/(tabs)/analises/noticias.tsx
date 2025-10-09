@@ -1,6 +1,5 @@
 import React from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 const AnaliseNoticiasScreen = () => {
   const sentimentoData = [
@@ -37,62 +36,54 @@ const AnaliseNoticiasScreen = () => {
   ];
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <ScrollView contentContainerStyle={styles.container}>
-        <Text style={styles.titulo}>Análise de Notícias</Text>
+    <ScrollView contentContainerStyle={styles.container}>
+      <Text style={styles.titulo}>Análise de Notícias</Text>
 
-        {/* Barra de sentimentos */}
-        <View style={styles.card}>
-          <Text style={styles.cardTitulo}>Balanço de Sentimentos</Text>
-          <View style={styles.barraAnalise}>
-            {sentimentoData.map((s) => (
-              <View
-                key={s.label}
-                style={{ flex: s.value, backgroundColor: s.color }}
-              />
-            ))}
-          </View>
-
-          <View style={styles.legendContainer}>
-            {sentimentoData.map((s) => (
-              <View key={s.label} style={styles.legendItem}>
-                <View
-                  style={[styles.legendDot, { backgroundColor: s.color }]}
-                />
-                <Text style={styles.legendText}>
-                  {s.label} ({s.value}%)
-                </Text>
-              </View>
-            ))}
-          </View>
+      {/* Barra de sentimentos */}
+      <View style={styles.card}>
+        <Text style={styles.cardTitulo}>Balanço de Sentimentos</Text>
+        <View style={styles.barraAnalise}>
+          {sentimentoData.map((s) => (
+            <View
+              key={s.label}
+              style={{ flex: s.value, backgroundColor: s.color }}
+            />
+          ))}
         </View>
 
-        {/* Lista de artigos */}
-        <Text style={styles.sectionTitulo}>Artigos Recentes</Text>
-        {mockNoticias.map((item) => (
-          <View key={item.id} style={styles.noticiaItem}>
-            <View
-              style={[styles.indicator, { backgroundColor: item.sentimento }]}
-            />
-            <View style={styles.noticiaInfo}>
-              <Text style={styles.noticiaTitulo} numberOfLines={2}>
-                {item.titulo}
+        <View style={styles.legendContainer}>
+          {sentimentoData.map((s) => (
+            <View key={s.label} style={styles.legendItem}>
+              <View style={[styles.legendDot, { backgroundColor: s.color }]} />
+              <Text style={styles.legendText}>
+                {s.label} ({s.value}%)
               </Text>
-              <Text style={styles.noticiaFonte}>{item.fonte}</Text>
             </View>
+          ))}
+        </View>
+      </View>
+
+      {/* Lista de artigos */}
+      <Text style={styles.sectionTitulo}>Artigos Recentes</Text>
+      {mockNoticias.map((item) => (
+        <View key={item.id} style={styles.noticiaItem}>
+          <View
+            style={[styles.indicator, { backgroundColor: item.sentimento }]}
+          />
+          <View style={styles.noticiaInfo}>
+            <Text style={styles.noticiaTitulo} numberOfLines={2}>
+              {item.titulo}
+            </Text>
+            <Text style={styles.noticiaFonte}>{item.fonte}</Text>
           </View>
-        ))}
-      </ScrollView>
-    </SafeAreaView>
+        </View>
+      ))}
+    </ScrollView>
   );
 };
 
 export default AnaliseNoticiasScreen;
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: "#F5F5F5",
-  },
   container: {
     padding: 16,
   },

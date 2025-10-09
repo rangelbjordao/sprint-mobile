@@ -204,8 +204,15 @@ const DiarioHumorScreen = () => {
 export default DiarioHumorScreen;
 
 const styles = StyleSheet.create({
-  container: { padding: 16, backgroundColor: "#F5F5F5" },
-  title: { fontSize: 28, fontWeight: "bold", marginBottom: 8 },
+  container: {
+    padding: 16,
+    backgroundColor: "#F5F5F5",
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: "bold",
+    marginBottom: 8,
+  },
   card: {
     backgroundColor: "#fff",
     borderRadius: 12,

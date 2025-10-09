@@ -1,7 +1,6 @@
 import { FontAwesome5 } from "@expo/vector-icons";
 import React from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 const mockMusicas = [
   {
@@ -44,64 +43,58 @@ const AnaliseMusicasScreen = () => {
   ];
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <ScrollView contentContainerStyle={styles.container}>
-        <Text style={styles.title}>Análise Musical</Text>
+    <ScrollView contentContainerStyle={styles.container}>
+      <Text style={styles.title}>Análise Musical</Text>
 
-        {/* barras de média */}
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Sua Vibe Musical Recente</Text>
-          {barras.map((barra) => (
-            <View key={barra.label} style={styles.barraContainer}>
-              <View style={styles.labelRow}>
-                <Text style={styles.barraLabel}>{barra.label}</Text>
-                <Text style={styles.percentText}>
-                  {Math.round(barra.value * 100)}%
-                </Text>
-              </View>
-              <View style={styles.barraBackground}>
-                <View
-                  style={[
-                    styles.barraFill,
-                    {
-                      width: `${barra.value * 100}%`,
-                      backgroundColor: barra.color,
-                    },
-                  ]}
-                />
-              </View>
+      {/* barras de média */}
+      <View style={styles.card}>
+        <Text style={styles.cardTitle}>Sua Vibe Musical Recente</Text>
+        {barras.map((barra) => (
+          <View key={barra.label} style={styles.barraContainer}>
+            <View style={styles.labelRow}>
+              <Text style={styles.barraLabel}>{barra.label}</Text>
+              <Text style={styles.percentText}>
+                {Math.round(barra.value * 100)}%
+              </Text>
             </View>
-          ))}
-        </View>
-
-        <Text style={styles.sectionTitle}>Músicas Recentes</Text>
-
-        {/* Lista de musicas */}
-        {mockMusicas.map((musica) => (
-          <View key={musica.id} style={styles.musicaItem}>
-            <FontAwesome5 name="music" size={20} color="#000000" />
-            <View style={styles.musicaInfo}>
-              <Text style={styles.musicaTitle}>{musica.title}</Text>
-              <Text style={styles.musicaArtist}>{musica.artist}</Text>
-            </View>
-            <View style={styles.musicaStats}>
-              <Text style={styles.statLabel}>E: {musica.energy}</Text>
-              <Text style={styles.statLabel}>P: {musica.valence}</Text>
+            <View style={styles.barraBackground}>
+              <View
+                style={[
+                  styles.barraFill,
+                  {
+                    width: `${barra.value * 100}%`,
+                    backgroundColor: barra.color,
+                  },
+                ]}
+              />
             </View>
           </View>
         ))}
-      </ScrollView>
-    </SafeAreaView>
+      </View>
+
+      <Text style={styles.sectionTitle}>Músicas Recentes</Text>
+
+      {/* Lista de musicas */}
+      {mockMusicas.map((musica) => (
+        <View key={musica.id} style={styles.musicaItem}>
+          <FontAwesome5 name="music" size={20} color="#000000" />
+          <View style={styles.musicaInfo}>
+            <Text style={styles.musicaTitle}>{musica.title}</Text>
+            <Text style={styles.musicaArtist}>{musica.artist}</Text>
+          </View>
+          <View style={styles.musicaStats}>
+            <Text style={styles.statLabel}>E: {musica.energy}</Text>
+            <Text style={styles.statLabel}>P: {musica.valence}</Text>
+          </View>
+        </View>
+      ))}
+    </ScrollView>
   );
 };
 
 export default AnaliseMusicasScreen;
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: "#F5F5F5",
-  },
   container: {
     padding: 16,
   },
