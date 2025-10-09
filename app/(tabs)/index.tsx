@@ -7,13 +7,7 @@ import CardResumoConsumo from "../components/home/CardResumoConsumo";
 
 const IndexScreen = () => {
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={{
-        paddingVertical: 20,
-      }}
-      showsVerticalScrollIndicator={false}
-    >
+    <ScrollView contentContainerStyle={styles.container}>
       {/* Header */}
       <Text style={styles.title}>Olá!, Usuário</Text>
       <Text style={styles.subtitle}>
