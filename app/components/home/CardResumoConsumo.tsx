@@ -21,18 +21,20 @@ export default function CardResumoConsumo() {
         </View>
 
         <View style={styles.legendContainer}>
-          <Text style={styles.legendText}>
+          <View style={styles.legendItem}>
             <View style={[styles.legendDot, { backgroundColor: "#50C878" }]} />
-            Positivas
-          </Text>
-          <Text style={styles.legendText}>
+            <Text style={styles.legendText}>Positivas</Text>
+          </View>
+
+          <View style={styles.legendItem}>
             <View style={[styles.legendDot, { backgroundColor: "#A9A9A9" }]} />
-            Neutras
-          </Text>
-          <Text style={styles.legendText}>
+            <Text style={styles.legendText}>Neutras</Text>
+          </View>
+
+          <View style={styles.legendItem}>
             <View style={[styles.legendDot, { backgroundColor: "#E97451" }]} />
-            Negativas
-          </Text>
+            <Text style={styles.legendText}>Negativas</Text>
+          </View>
         </View>
       </View>
 
@@ -82,6 +84,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-around",
     marginTop: 8,
+  },
+  legendItem: {
+    flexDirection: "row",
+    alignItems: "center",
   },
   legendText: {
     fontSize: 12,
