@@ -1,9 +1,9 @@
 {
   "expo": {
-    "name": "my-app",
-    "slug": "my-app",
+    "name": "emotiwave",
+    "slug": "emotiwave",
     "version": "1.0.0",
-    "scheme": "my-app",
+    "scheme": "emotiwave",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
