@@ -9,7 +9,7 @@ const IndexScreen = () => {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       {/* Header */}
-      <Text style={styles.title}>Olá!, Usuário</Text>
+      <Text style={styles.title}>Olá, Usuário!</Text>
       <Text style={styles.subtitle}>
         Veja como seu bem-estar digital está hoje.
       </Text>

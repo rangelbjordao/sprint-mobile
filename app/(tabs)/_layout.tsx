@@ -40,10 +40,10 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
-        name="ajustes"
+        name="configuracoes"
         options={{
-          title: "Ajustes",
-          tabBarLabel: "Ajustes",
+          title: "Configurações",
+          tabBarLabel: "Configurações",
           tabBarIcon: ({ color, size }) => (
             <Feather name="settings" color={color} size={size} />
           ),
