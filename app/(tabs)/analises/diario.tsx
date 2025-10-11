@@ -1,5 +1,6 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import React, { useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import React, { useEffect, useState } from "react";
 import {
   Button,
   ScrollView,
@@ -51,6 +52,20 @@ const DiarioHumorScreen = () => {
   const [historico, setHistorico] = useState<Registro[]>([]);
   const [mensagemErro, setMensagemErro] = useState<string>("");
 
+  useEffect(() => {
+    const carregarHistorico = async () => {
+      try {
+        const dadosSalvos = await AsyncStorage.getItem("@historico");
+        if (dadosSalvos) {
+          setHistorico(JSON.parse(dadosSalvos));
+        }
+      } catch (error) {
+        console.log("Erro ao carregar histórico:", error);
+      }
+    };
+    carregarHistorico();
+  }, []);
+
   const alternarAtividade = (atividade: string) =>
     setAtividadesSelecionadas((prev) =>
       prev.includes(atividade)
@@ -58,16 +73,12 @@ const DiarioHumorScreen = () => {
         : [...prev, atividade]
     );
 
-  const salvarRegistro = () => {
-    if (!humorSelecionado) {
-      return setMensagemErro("Selecione um humor.");
-    }
-    if (!atividadesSelecionadas.length) {
+  const salvarRegistro = async () => {
+    if (!humorSelecionado) return setMensagemErro("Selecione um humor.");
+    if (!atividadesSelecionadas.length)
       return setMensagemErro("Selecione pelo menos uma atividade.");
-    }
-    if (!detalhes.trim()) {
+    if (!detalhes.trim())
       return setMensagemErro("Adicione detalhes sobre seu dia.");
-    }
 
     const novoRegistro: Registro = {
       humor: humorSelecionado,
@@ -76,11 +87,18 @@ const DiarioHumorScreen = () => {
       data: new Date().toLocaleString(),
     };
 
-    setHistorico([novoRegistro, ...historico]);
+    const novoHistorico = [novoRegistro, ...historico];
+    setHistorico(novoHistorico);
     setHumorSelecionado(null);
     setAtividadesSelecionadas([]);
     setDetalhes("");
     setMensagemErro("");
+
+    try {
+      await AsyncStorage.setItem("@historico", JSON.stringify(novoHistorico));
+    } catch (error) {
+      console.log("Erro ao salvar histórico:", error);
+    }
   };
 
   return (
@@ -131,9 +149,9 @@ const DiarioHumorScreen = () => {
             >
               <Text
                 style={
-                  atividadesSelecionadas.includes(atividade) && {
-                    color: "#fff",
-                  }
+                  atividadesSelecionadas.includes(atividade)
+                    ? { color: "#fff" }
+                    : {}
                 }
               >
                 {atividade}
