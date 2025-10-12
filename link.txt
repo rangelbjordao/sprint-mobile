@@ -1,1 +1,6 @@
 https://github.com/rangelbjordao/sprint-mobile
+
+-- LUCAS JOSÉ LIMA - RM561160
+-- EDUARDO OSTERLOH BINDO - RM559755
+-- RANGEL BERNARDI JORDÃO - RM560547
+
