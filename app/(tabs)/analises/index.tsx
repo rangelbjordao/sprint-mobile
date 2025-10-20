@@ -1,7 +1,7 @@
 import { Feather, FontAwesome5 } from "@expo/vector-icons";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
-import CardNavegacao from "../../components/analises/CardNavegacao";
+import CardNavegacao from "../../../components/analises/CardNavegacao";
 
 const AnalisesScreen = () => {
   return (
