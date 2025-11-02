@@ -142,12 +142,12 @@ const DiarioHumorScreen = () => {
                   </Text>
                 </TouchableOpacity>
               ))}
+              {errors.humor && (
+                <Text style={styles.msgErro}>{errors.humor.message}</Text>
+              )}
             </View>
           )}
         />
-        {errors.humor && (
-          <Text style={styles.msgErro}>{errors.humor.message}</Text>
-        )}
 
         <Text style={styles.cardTitle}>O que você fez?</Text>
         <Controller
@@ -179,12 +179,12 @@ const DiarioHumorScreen = () => {
                   </TouchableOpacity>
                 );
               })}
+              {errors.atividades && (
+                <Text style={styles.msgErro}>{errors.atividades.message}</Text>
+              )}
             </View>
           )}
         />
-        {errors.atividades && (
-          <Text style={styles.msgErro}>{errors.atividades.message}</Text>
-        )}
 
         <Text style={styles.cardTitle}>Anote mais detalhes:</Text>
         <Controller
@@ -196,21 +196,23 @@ const DiarioHumorScreen = () => {
               v.trim().length > 0 || "O campo não pode estar vazio.",
           }}
           render={({ field: { onChange, value } }) => (
-            <TextInput
-              style={styles.input}
-              placeholder="Descreva seu dia, pensamentos ou sentimentos..."
-              value={value}
-              onChangeText={(text) => {
-                onChange(text);
-                clearErrors("detalhes");
-              }}
-              multiline
-            />
+            <View style={{ marginBottom: 10 }}>
+              <TextInput
+                style={styles.input}
+                placeholder="Descreva seu dia, pensamentos ou sentimentos..."
+                value={value}
+                onChangeText={(text) => {
+                  onChange(text);
+                  clearErrors("detalhes");
+                }}
+                multiline
+              />
+              {errors.detalhes && (
+                <Text style={styles.msgErro}>{errors.detalhes.message}</Text>
+              )}
+            </View>
           )}
         />
-        {errors.detalhes && (
-          <Text style={styles.msgErro}>{errors.detalhes.message}</Text>
-        )}
 
         <Button
           title="Salvar Registro"
@@ -301,7 +303,7 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   humorSelecionado: { backgroundColor: "#4A90E2" },
-  textoHumor: { marginTop: 5, fontSize: 14 },
+  textoHumor: { marginTop: 5, fontSize: 12 },
   tagsContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
@@ -328,7 +330,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 20,
   },
-  msgErro: { color: "red", marginTop: 10, textAlign: "center" },
+  msgErro: { color: "red", marginTop: 4, marginBottom: 8, textAlign: "center" },
   cardHistorico: {
     backgroundColor: "#FFF",
     borderRadius: 8,
