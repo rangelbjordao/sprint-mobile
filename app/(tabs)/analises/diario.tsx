@@ -9,6 +9,7 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  Alert,
 } from "react-native";
 import { useForm, Controller } from "react-hook-form";
 
@@ -45,18 +46,10 @@ const ListaDeAtividades = [
 ];
 
 const DiarioHumorScreen = () => {
-  const [humorSelecionado, setHumorSelecionado] = useState<string | null>(null);
-  const [atividadesSelecionadas, setAtividadesSelecionadas] = useState<
-    string[]
-  >([]);
-  const [detalhes, setDetalhes] = useState<string>("");
-
   const {
     control,
     handleSubmit,
     reset,
-    watch,
-    setError,
     clearErrors,
     formState: { errors },
   } = useForm<Registro>({
@@ -69,7 +62,6 @@ const DiarioHumorScreen = () => {
   });
 
   const [historico, setHistorico] = useState<Registro[]>([]);
-  const [mensagemErro, setMensagemErro] = useState<string>("");
 
   useEffect(() => {
     const carregarHistorico = async () => {
@@ -85,13 +77,6 @@ const DiarioHumorScreen = () => {
     carregarHistorico();
   }, []);
 
-  const alternarAtividade = (atividade: string) =>
-    setAtividadesSelecionadas((prev) =>
-      prev.includes(atividade)
-        ? prev.filter((a) => a !== atividade)
-        : [...prev, atividade]
-    );
-
   const salvarRegistro = async (data: Registro) => {
     const novoRegistro: Registro = {
       ...data,
@@ -100,10 +85,18 @@ const DiarioHumorScreen = () => {
 
     const novoHistorico = [novoRegistro, ...historico];
     setHistorico(novoHistorico);
-    reset();
 
     try {
       await AsyncStorage.setItem("@historico", JSON.stringify(novoHistorico));
+
+      reset({
+        humor: "",
+        atividades: [],
+        detalhes: "",
+        data: "",
+      });
+
+      Alert.alert("Sucesso", "Registro salvo com sucesso!");
     } catch (error) {
       console.log("Erro ao salvar histórico:", error);
     }
@@ -224,8 +217,6 @@ const DiarioHumorScreen = () => {
           onPress={handleSubmit(salvarRegistro)}
           color="#4A90E2"
         />
-
-        {mensagemErro && <Text style={styles.msgErro}>{mensagemErro}</Text>}
       </View>
 
       {/* Histórico de registros */}
