@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useForm, Controller } from "react-hook-form";
 
 type HumorIcone =
   | "emoticon-excited-outline"
@@ -49,6 +50,24 @@ const DiarioHumorScreen = () => {
     string[]
   >([]);
   const [detalhes, setDetalhes] = useState<string>("");
+
+  const {
+    control,
+    handleSubmit,
+    reset,
+    watch,
+    setError,
+    clearErrors,
+    formState: { errors },
+  } = useForm<Registro>({
+    defaultValues: {
+      humor: "",
+      atividades: [],
+      detalhes: "",
+      data: "",
+    },
+  });
+
   const [historico, setHistorico] = useState<Registro[]>([]);
   const [mensagemErro, setMensagemErro] = useState<string>("");
 
@@ -73,26 +92,15 @@ const DiarioHumorScreen = () => {
         : [...prev, atividade]
     );
 
-  const salvarRegistro = async () => {
-    if (!humorSelecionado) return setMensagemErro("Selecione um humor.");
-    if (!atividadesSelecionadas.length)
-      return setMensagemErro("Selecione pelo menos uma atividade.");
-    if (!detalhes.trim())
-      return setMensagemErro("Adicione detalhes sobre seu dia.");
-
+  const salvarRegistro = async (data: Registro) => {
     const novoRegistro: Registro = {
-      humor: humorSelecionado,
-      atividades: [...atividadesSelecionadas],
-      detalhes,
+      ...data,
       data: new Date().toLocaleString(),
     };
 
     const novoHistorico = [novoRegistro, ...historico];
     setHistorico(novoHistorico);
-    setHumorSelecionado(null);
-    setAtividadesSelecionadas([]);
-    setDetalhes("");
-    setMensagemErro("");
+    reset();
 
     try {
       await AsyncStorage.setItem("@historico", JSON.stringify(novoHistorico));
@@ -108,70 +116,112 @@ const DiarioHumorScreen = () => {
       {/* Formulário do diario */}
       <View style={styles.card}>
         <Text style={styles.cardTitle}>Como você está se sentindo hoje?</Text>
-        <View style={styles.opcoesDeHumor}>
-          {ListaDeHumores.map((humor, i) => (
-            <TouchableOpacity
-              key={i}
-              style={[
-                styles.botaoHumor,
-                humorSelecionado === humor.nome && styles.humorSelecionado,
-              ]}
-              onPress={() => setHumorSelecionado(humor.nome)}
-            >
-              <MaterialCommunityIcons
-                name={humor.icone}
-                size={36}
-                color={humorSelecionado === humor.nome ? "#fff" : "#444"}
-              />
-              <Text
-                style={[
-                  styles.textoHumor,
-                  humorSelecionado === humor.nome && { color: "#fff" },
-                ]}
-              >
-                {humor.nome}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
+        <Controller
+          control={control}
+          name="humor"
+          rules={{ required: "Selecione um humor." }}
+          render={({ field: { onChange, value } }) => (
+            <View style={styles.opcoesDeHumor}>
+              {ListaDeHumores.map((humor, i) => (
+                <TouchableOpacity
+                  key={i}
+                  style={[
+                    styles.botaoHumor,
+                    value === humor.nome && styles.humorSelecionado,
+                  ]}
+                  onPress={() => {
+                    onChange(humor.nome);
+                    clearErrors("humor");
+                  }}
+                >
+                  <MaterialCommunityIcons
+                    name={humor.icone}
+                    size={36}
+                    color={value === humor.nome ? "#fff" : "#444"}
+                  />
+                  <Text
+                    style={[
+                      styles.textoHumor,
+                      value === humor.nome && { color: "#fff" },
+                    ]}
+                  >
+                    {humor.nome}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          )}
+        />
+        {errors.humor && (
+          <Text style={styles.msgErro}>{errors.humor.message}</Text>
+        )}
 
         <Text style={styles.cardTitle}>O que você fez?</Text>
-        <View style={styles.tagsContainer}>
-          {ListaDeAtividades.map((atividade, i) => (
-            <TouchableOpacity
-              key={i}
-              style={[
-                styles.tag,
-                atividadesSelecionadas.includes(atividade) &&
-                  styles.tagSelecionada,
-              ]}
-              onPress={() => alternarAtividade(atividade)}
-            >
-              <Text
-                style={
-                  atividadesSelecionadas.includes(atividade)
-                    ? { color: "#fff" }
-                    : {}
-                }
-              >
-                {atividade}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
+        <Controller
+          control={control}
+          name="atividades"
+          rules={{
+            validate: (value) =>
+              value.length > 0 || "Selecione pelo menos uma atividade.",
+          }}
+          render={({ field: { onChange, value } }) => (
+            <View style={styles.tagsContainer}>
+              {ListaDeAtividades.map((atividade, i) => {
+                const selecionada = value.includes(atividade);
+                return (
+                  <TouchableOpacity
+                    key={i}
+                    style={[styles.tag, selecionada && styles.tagSelecionada]}
+                    onPress={() => {
+                      const novoValor = selecionada
+                        ? value.filter((a) => a !== atividade)
+                        : [...value, atividade];
+                      onChange(novoValor);
+                      clearErrors("atividades");
+                    }}
+                  >
+                    <Text style={selecionada ? { color: "#fff" } : {}}>
+                      {atividade}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          )}
+        />
+        {errors.atividades && (
+          <Text style={styles.msgErro}>{errors.atividades.message}</Text>
+        )}
 
         <Text style={styles.cardTitle}>Anote mais detalhes:</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Descreva seu dia, pensamentos ou sentimentos..."
-          value={detalhes}
-          onChangeText={setDetalhes}
-          multiline
+        <Controller
+          control={control}
+          name="detalhes"
+          rules={{
+            required: "Adicione detalhes sobre seu dia.",
+            validate: (v) =>
+              v.trim().length > 0 || "O campo não pode estar vazio.",
+          }}
+          render={({ field: { onChange, value } }) => (
+            <TextInput
+              style={styles.input}
+              placeholder="Descreva seu dia, pensamentos ou sentimentos..."
+              value={value}
+              onChangeText={(text) => {
+                onChange(text);
+                clearErrors("detalhes");
+              }}
+              multiline
+            />
+          )}
         />
+        {errors.detalhes && (
+          <Text style={styles.msgErro}>{errors.detalhes.message}</Text>
+        )}
 
         <Button
           title="Salvar Registro"
-          onPress={salvarRegistro}
+          onPress={handleSubmit(salvarRegistro)}
           color="#4A90E2"
         />
 
