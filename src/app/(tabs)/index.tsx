@@ -1,9 +1,9 @@
+import CardHumorAtual from "@/components/home/CardHumorAtual";
+import CardHumorSemana from "@/components/home/CardHumorSemana";
+import CardRecomendacao from "@/components/home/CardRecomendacao";
+import CardResumoConsumo from "@/components/home/CardResumoConsumo";
 import React from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
-import CardHumorAtual from "../../components/home/CardHumorAtual";
-import CardResumoConsumo from "../../components/home/CardResumoConsumo";
-import CardRecomendacao from "../../components/home/CardRecomendacao";
-import CardHumorSemana from "../../components/home/CardHumorSemana";
 
 const IndexScreen = () => {
   return (
