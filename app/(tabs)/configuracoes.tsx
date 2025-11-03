@@ -1,7 +1,6 @@
 import { Feather, FontAwesome } from "@expo/vector-icons";
 import React, { useState } from "react";
 import {
-  Button,
   StyleSheet,
   Text,
   TextInput,
