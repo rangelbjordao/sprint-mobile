@@ -9,7 +9,9 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  Alert,
 } from "react-native";
+import { useForm, Controller } from "react-hook-form";
 
 type HumorIcone =
   | "emoticon-excited-outline"
@@ -44,13 +46,22 @@ const ListaDeAtividades = [
 ];
 
 const DiarioHumorScreen = () => {
-  const [humorSelecionado, setHumorSelecionado] = useState<string | null>(null);
-  const [atividadesSelecionadas, setAtividadesSelecionadas] = useState<
-    string[]
-  >([]);
-  const [detalhes, setDetalhes] = useState<string>("");
+  const {
+    control,
+    handleSubmit,
+    reset,
+    clearErrors,
+    formState: { errors },
+  } = useForm<Registro>({
+    defaultValues: {
+      humor: "",
+      atividades: [],
+      detalhes: "",
+      data: "",
+    },
+  });
+
   const [historico, setHistorico] = useState<Registro[]>([]);
-  const [mensagemErro, setMensagemErro] = useState<string>("");
 
   useEffect(() => {
     const carregarHistorico = async () => {
@@ -66,36 +77,26 @@ const DiarioHumorScreen = () => {
     carregarHistorico();
   }, []);
 
-  const alternarAtividade = (atividade: string) =>
-    setAtividadesSelecionadas((prev) =>
-      prev.includes(atividade)
-        ? prev.filter((a) => a !== atividade)
-        : [...prev, atividade]
-    );
-
-  const salvarRegistro = async () => {
-    if (!humorSelecionado) return setMensagemErro("Selecione um humor.");
-    if (!atividadesSelecionadas.length)
-      return setMensagemErro("Selecione pelo menos uma atividade.");
-    if (!detalhes.trim())
-      return setMensagemErro("Adicione detalhes sobre seu dia.");
-
+  const salvarRegistro = async (data: Registro) => {
     const novoRegistro: Registro = {
-      humor: humorSelecionado,
-      atividades: [...atividadesSelecionadas],
-      detalhes,
+      ...data,
       data: new Date().toLocaleString(),
     };
 
     const novoHistorico = [novoRegistro, ...historico];
     setHistorico(novoHistorico);
-    setHumorSelecionado(null);
-    setAtividadesSelecionadas([]);
-    setDetalhes("");
-    setMensagemErro("");
 
     try {
       await AsyncStorage.setItem("@historico", JSON.stringify(novoHistorico));
+
+      reset({
+        humor: "",
+        atividades: [],
+        detalhes: "",
+        data: "",
+      });
+
+      Alert.alert("Sucesso", "Registro salvo com sucesso!");
     } catch (error) {
       console.log("Erro ao salvar histórico:", error);
     }
@@ -108,74 +109,116 @@ const DiarioHumorScreen = () => {
       {/* Formulário do diario */}
       <View style={styles.card}>
         <Text style={styles.cardTitle}>Como você está se sentindo hoje?</Text>
-        <View style={styles.opcoesDeHumor}>
-          {ListaDeHumores.map((humor, i) => (
-            <TouchableOpacity
-              key={i}
-              style={[
-                styles.botaoHumor,
-                humorSelecionado === humor.nome && styles.humorSelecionado,
-              ]}
-              onPress={() => setHumorSelecionado(humor.nome)}
-            >
-              <MaterialCommunityIcons
-                name={humor.icone}
-                size={36}
-                color={humorSelecionado === humor.nome ? "#fff" : "#444"}
-              />
-              <Text
-                style={[
-                  styles.textoHumor,
-                  humorSelecionado === humor.nome && { color: "#fff" },
-                ]}
-              >
-                {humor.nome}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
+        <Controller
+          control={control}
+          name="humor"
+          rules={{ required: "Selecione um humor." }}
+          render={({ field: { onChange, value } }) => (
+            <View style={styles.opcoesDeHumor}>
+              {ListaDeHumores.map((humor, i) => (
+                <TouchableOpacity
+                  key={i}
+                  style={[
+                    styles.botaoHumor,
+                    value === humor.nome && styles.humorSelecionado,
+                  ]}
+                  onPress={() => {
+                    onChange(humor.nome);
+                    clearErrors("humor");
+                  }}
+                >
+                  <MaterialCommunityIcons
+                    name={humor.icone}
+                    size={36}
+                    color={value === humor.nome ? "#fff" : "#444"}
+                  />
+                  <Text
+                    style={[
+                      styles.textoHumor,
+                      value === humor.nome && { color: "#fff" },
+                    ]}
+                  >
+                    {humor.nome}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+              {errors.humor && (
+                <Text style={styles.msgErro}>{errors.humor.message}</Text>
+              )}
+            </View>
+          )}
+        />
 
         <Text style={styles.cardTitle}>O que você fez?</Text>
-        <View style={styles.tagsContainer}>
-          {ListaDeAtividades.map((atividade, i) => (
-            <TouchableOpacity
-              key={i}
-              style={[
-                styles.tag,
-                atividadesSelecionadas.includes(atividade) &&
-                  styles.tagSelecionada,
-              ]}
-              onPress={() => alternarAtividade(atividade)}
-            >
-              <Text
-                style={
-                  atividadesSelecionadas.includes(atividade)
-                    ? { color: "#fff" }
-                    : {}
-                }
-              >
-                {atividade}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
+        <Controller
+          control={control}
+          name="atividades"
+          rules={{
+            validate: (value) =>
+              value.length > 0 || "Selecione pelo menos uma atividade.",
+          }}
+          render={({ field: { onChange, value } }) => (
+            <View style={styles.tagsContainer}>
+              {ListaDeAtividades.map((atividade, i) => {
+                const selecionada = value.includes(atividade);
+                return (
+                  <TouchableOpacity
+                    key={i}
+                    style={[styles.tag, selecionada && styles.tagSelecionada]}
+                    onPress={() => {
+                      const novoValor = selecionada
+                        ? value.filter((a) => a !== atividade)
+                        : [...value, atividade];
+                      onChange(novoValor);
+                      clearErrors("atividades");
+                    }}
+                  >
+                    <Text style={selecionada ? { color: "#fff" } : {}}>
+                      {atividade}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+              {errors.atividades && (
+                <Text style={styles.msgErro}>{errors.atividades.message}</Text>
+              )}
+            </View>
+          )}
+        />
 
         <Text style={styles.cardTitle}>Anote mais detalhes:</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Descreva seu dia, pensamentos ou sentimentos..."
-          value={detalhes}
-          onChangeText={setDetalhes}
-          multiline
+        <Controller
+          control={control}
+          name="detalhes"
+          rules={{
+            required: "Adicione detalhes sobre seu dia.",
+            validate: (v) =>
+              v.trim().length > 0 || "O campo não pode estar vazio.",
+          }}
+          render={({ field: { onChange, value } }) => (
+            <View style={{ marginBottom: 10 }}>
+              <TextInput
+                style={styles.input}
+                placeholder="Descreva seu dia, pensamentos ou sentimentos..."
+                value={value}
+                onChangeText={(text) => {
+                  onChange(text);
+                  clearErrors("detalhes");
+                }}
+                multiline
+              />
+              {errors.detalhes && (
+                <Text style={styles.msgErro}>{errors.detalhes.message}</Text>
+              )}
+            </View>
+          )}
         />
 
         <Button
           title="Salvar Registro"
-          onPress={salvarRegistro}
+          onPress={handleSubmit(salvarRegistro)}
           color="#4A90E2"
         />
-
-        {mensagemErro && <Text style={styles.msgErro}>{mensagemErro}</Text>}
       </View>
 
       {/* Histórico de registros */}
@@ -260,7 +303,7 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   humorSelecionado: { backgroundColor: "#4A90E2" },
-  textoHumor: { marginTop: 5, fontSize: 14 },
+  textoHumor: { marginTop: 5, fontSize: 12 },
   tagsContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
@@ -287,7 +330,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 20,
   },
-  msgErro: { color: "red", marginTop: 10, textAlign: "center" },
+  msgErro: { color: "red", marginTop: 4, marginBottom: 8, textAlign: "center" },
   cardHistorico: {
     backgroundColor: "#FFF",
     borderRadius: 8,

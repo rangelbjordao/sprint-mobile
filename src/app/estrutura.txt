@@ -1,0 +1,19 @@
+Folder PATH listing
+Volume serial number is F6FC-3B19
+C:.
+¦   estrutura.txt
+¦   index.tsx
+¦   _layout.tsx
+¦   
++---(tabs)
+    ¦   configuracoes.tsx
+    ¦   index.tsx
+    ¦   _layout.tsx
+    ¦   
+    +---analises
+            diario.tsx
+            index.tsx
+            musicas.tsx
+            noticias.tsx
+            _layout.tsx
+            
