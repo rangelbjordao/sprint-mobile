@@ -1,25 +1,34 @@
 import { Feather, FontAwesome } from "@expo/vector-icons";
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import {
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
+  ActivityIndicator,
 } from "react-native";
+import { useSpotifyAuth } from "@/hooks/useSpotifyAuth";
+import { useFocusEffect } from "expo-router";
 
-export default function ConfiguracoesScreen() {
+const ConfiguracoesScreen = () => {
   const [usuario, setUsuario] = useState("");
-  const [spotifyConectado, setSpotifyConectado] = useState(false);
   const [mensagemSalva, setMensagemSalva] = useState("");
+  const { accessToken, isTokenLoading, loadToken, login, logout } =
+    useSpotifyAuth();
+
+  useFocusEffect(
+    useCallback(() => {
+      loadToken();
+    }, [])
+  );
 
   const salvarUsuario = () => {
     if (usuario.trim().length < 1) {
       setMensagemSalva("Digite pelo menos 1 caractere.");
       return;
     }
-
-    setMensagemSalva(`Usuário salvo com sucesso!`);
+    setMensagemSalva("Usuário salvo com sucesso!");
   };
 
   return (
@@ -48,24 +57,28 @@ export default function ConfiguracoesScreen() {
 
       <View style={styles.card}>
         <Text style={styles.cardTitulo}>Conexões</Text>
-        <TouchableOpacity
-          style={[
-            styles.botaoSpotify,
-            spotifyConectado && styles.botaoConectado,
-          ]}
-          onPress={() => setSpotifyConectado(!spotifyConectado)}
-        >
-          <FontAwesome name="spotify" size={20} color="#FFF" />
-          <Text style={styles.textoBotao}>
-            {spotifyConectado
-              ? "Conectado com Spotify"
-              : "Conectar com Spotify"}
-          </Text>
-        </TouchableOpacity>
+        {isTokenLoading ? (
+          <ActivityIndicator color="#1DB954" />
+        ) : (
+          <TouchableOpacity
+            style={[
+              styles.botaoSpotify,
+              accessToken ? styles.botaoDesconectar : {},
+            ]}
+            onPress={accessToken ? logout : login}
+          >
+            <FontAwesome name="spotify" size={20} color="#FFF" />
+            <Text style={styles.textoBotao}>
+              {accessToken ? "Desconectar do Spotify" : "Conectar com Spotify"}
+            </Text>
+          </TouchableOpacity>
+        )}
       </View>
     </View>
   );
-}
+};
+
+export default ConfiguracoesScreen;
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 16, backgroundColor: "#F5F5F5" },
@@ -115,7 +128,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
   },
-
   botaoSpotify: {
     flexDirection: "row",
     alignItems: "center",
@@ -126,6 +138,9 @@ const styles = StyleSheet.create({
   },
   botaoConectado: {
     backgroundColor: "#5a8e6b",
+  },
+  botaoDesconectar: {
+    backgroundColor: "#b02c1b",
   },
   textoBotao: {
     color: "#FFF",

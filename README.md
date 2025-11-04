@@ -22,3 +22,9 @@ Protótipo de app mobile que permite ao usuário acompanhar seu bem-estar digita
 - React Hooks (`useState`, `useEffect`)
 - AsyncStorage
 - React Native Vector Icons
+
+## Configuração do Ambiente
+
+Para rodar o app corretamente, você precisa configurar algumas variáveis de ambiente.
+
+As intruções estão em .env.example
