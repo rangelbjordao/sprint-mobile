@@ -1,9 +1,14 @@
+import {
+  carregarToken,
+  removerToken,
+  salvarToken,
+  trocarCodigoPorToken,
+} from "@/services/spotifyService";
+import { SpotifyAuthHook } from "@/types/spotifyAuth";
+import { EXPO_PUBLIC_SPOTIFY_CLIENT_ID } from "@env";
 import * as AuthSession from "expo-auth-session";
 import * as WebBrowser from "expo-web-browser";
 import { useCallback, useEffect, useState } from "react";
-import { Alert } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { EXPO_PUBLIC_SPOTIFY_CLIENT_ID } from "@env";
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -17,13 +22,12 @@ const SCOPES = [
 const AUTH_URL = "https://accounts.spotify.com/authorize";
 const TOKEN_URL = "https://accounts.spotify.com/api/token";
 const REDIRECT_URI = AuthSession.makeRedirectUri();
-const TOKEN_STORAGE_KEY = "spotify_access_token";
 
-console.log("Redirect URI:", REDIRECT_URI);
-
-export function useSpotifyAuth() {
+export function useSpotifyAuth(): SpotifyAuthHook {
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [isTokenLoading, setIsTokenLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
   const [request, response, promptAsync] = AuthSession.useAuthRequest(
     {
       clientId: CLIENT_ID,
@@ -32,28 +36,8 @@ export function useSpotifyAuth() {
       redirectUri: REDIRECT_URI,
       usePKCE: true,
     },
-    {
-      authorizationEndpoint: AUTH_URL,
-      tokenEndpoint: TOKEN_URL,
-    }
+    { authorizationEndpoint: AUTH_URL, tokenEndpoint: TOKEN_URL }
   );
-
-  const saveToken = useCallback(async (token: string) => {
-    setAccessToken(token);
-    await AsyncStorage.setItem(TOKEN_STORAGE_KEY, token);
-  }, []);
-
-  const loadToken = useCallback(async () => {
-    setIsTokenLoading(true);
-    try {
-      const token = await AsyncStorage.getItem(TOKEN_STORAGE_KEY);
-      if (token) setAccessToken(token);
-    } catch (error) {
-      console.error("Erro ao carregar token do AsyncStorage:", error);
-    } finally {
-      setIsTokenLoading(false);
-    }
-  }, []);
 
   const login = async () => {
     if (!request) return;
@@ -62,52 +46,43 @@ export function useSpotifyAuth() {
   };
 
   const logout = useCallback(async () => {
-    await AsyncStorage.removeItem(TOKEN_STORAGE_KEY);
+    await removerToken();
     setAccessToken(null);
-    Alert.alert("Logout", "Desconectado do Spotify com sucesso!");
+  }, []);
+
+  const loadToken = useCallback(async () => {
+    setIsTokenLoading(true);
+    try {
+      const token = await carregarToken();
+      if (token) setAccessToken(token);
+    } catch {
+      setError("Erro ao carregar token");
+    } finally {
+      setIsTokenLoading(false);
+    }
   }, []);
 
   useEffect(() => {
-    const trocarCodigoPorToken = async () => {
+    const trocarCodigo = async () => {
       if (response?.type === "success" && response.params.code) {
-        const codigo = response.params.code;
-
+        const code = response.params.code;
         if (!request?.codeVerifier) {
-          console.error("Code verifier não disponível!");
-          Alert.alert(
-            "Erro",
-            "Não foi possível obter o code verifier do AuthSession."
-          );
+          setError("Code verifier não disponível");
           setIsTokenLoading(false);
           return;
         }
-
         try {
-          const body = new URLSearchParams({
-            grant_type: "authorization_code",
-            code: codigo,
-            redirect_uri: REDIRECT_URI,
-            client_id: CLIENT_ID,
-            code_verifier: request.codeVerifier,
-          }).toString();
-
-          const tokenResposta = await fetch(TOKEN_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/x-www-form-urlencoded" },
-            body,
-          });
-
-          const data = await tokenResposta.json();
-          if (data.access_token) {
-            await saveToken(data.access_token);
-            Alert.alert("Sucesso", "Login realizado com o Spotify!");
-          } else {
-            console.error("Erro ao trocar código por token", data);
-            Alert.alert("Erro", "Não foi possível obter token do Spotify.");
-          }
-        } catch (error) {
-          console.error("Erro na requisição de token:", error);
-          Alert.alert("Erro", "Falha na requisição de token.");
+          const token = await trocarCodigoPorToken(
+            code,
+            request.codeVerifier,
+            CLIENT_ID,
+            REDIRECT_URI,
+            TOKEN_URL
+          );
+          await salvarToken(token);
+          setAccessToken(token);
+        } catch {
+          setError("Falha ao trocar código por token");
         } finally {
           setIsTokenLoading(false);
         }
@@ -115,9 +90,8 @@ export function useSpotifyAuth() {
         setIsTokenLoading(false);
       }
     };
-
-    trocarCodigoPorToken();
-  }, [response, request, saveToken]);
+    trocarCodigo();
+  }, [response, request]);
 
   useEffect(() => {
     loadToken();
@@ -126,10 +100,10 @@ export function useSpotifyAuth() {
   return {
     accessToken,
     promptAsync,
-    request,
     loadToken,
     isTokenLoading,
     login,
     logout,
+    error,
   };
 }
