@@ -8,7 +8,12 @@ import { EXPO_PUBLIC_SPOTIFY_CLIENT_ID } from "@env";
 WebBrowser.maybeCompleteAuthSession();
 
 const CLIENT_ID = EXPO_PUBLIC_SPOTIFY_CLIENT_ID;
-const SCOPES = ["user-read-email", "user-read-private", "user-top-read"];
+const SCOPES = [
+  "user-read-email",
+  "user-read-private",
+  "user-top-read",
+  "user-read-recently-played",
+];
 const AUTH_URL = "https://accounts.spotify.com/authorize";
 const TOKEN_URL = "https://accounts.spotify.com/api/token";
 const REDIRECT_URI = AuthSession.makeRedirectUri();

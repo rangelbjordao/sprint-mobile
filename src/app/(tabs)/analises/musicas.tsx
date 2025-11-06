@@ -1,46 +1,100 @@
-import { FontAwesome5 } from "@expo/vector-icons";
-import React from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
-
-const mockMusicas = [
-  {
-    id: "1",
-    artist: "Tame Impala",
-    title: "The Less I Know The Better",
-    energy: 0.7,
-    valence: 0.85,
-  },
-  {
-    id: "2",
-    artist: "Billie Eilish",
-    title: "bad guy",
-    energy: 0.6,
-    valence: 0.5,
-  },
-  {
-    id: "3",
-    artist: "Daft Punk",
-    title: "Get Lucky",
-    energy: 0.8,
-    valence: 0.9,
-  },
-  {
-    id: "4",
-    artist: "Bon Iver",
-    title: "Holocene",
-    energy: 0.2,
-    valence: 0.15,
-  },
-];
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import {
+  ActivityIndicator,
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 
 const AnaliseMusicasScreen = () => {
   const medias = { energy: 0.68, valence: 0.61, danceability: 0.75 };
+  const [musicas, setMusicas] = useState<any[]>([]);
+  const [carregando, setCarregando] = useState(true);
+
+  useEffect(() => {
+    async function carregarMusicas() {
+      try {
+        const token = await AsyncStorage.getItem("spotify_access_token");
+        if (!token) {
+          console.log("Token do Spotify não encontrado.");
+          setCarregando(false);
+          return;
+        }
+
+        // Buscar últimas músicas tocadas
+        const resposta = await axios.get(
+          "https://api.spotify.com/v1/me/player/recently-played?limit=5",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+
+        console.log("Músicas carregadas:", resposta.data);
+        const items = resposta.data.items;
+
+        const tracks = items.map((item: any) => item.track);
+        setMusicas(tracks);
+
+        const ids = tracks.map((m: any) => m.id).join(",");
+        const audioFeatures = await axios.get(
+          `https://api.spotify.com/v1/audio-features?ids=${ids}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+
+        const features = audioFeatures.data.audio_features;
+
+        const avg = (key: string) =>
+          features.reduce((acc: number, f: any) => acc + (f?.[key] || 0), 0) /
+          features.length;
+
+        setMedias({
+          energy: avg("energy"),
+          valence: avg("valence"),
+          danceability: avg("danceability"),
+        });
+      } catch (error: any) {
+        if (error.response) {
+          console.log(
+            "Erro Spotify:",
+            error.response.status,
+            error.response.data
+          );
+        } else {
+          console.log("Erro inesperado:", error.message);
+        }
+      } finally {
+        setCarregando(false);
+      }
+    }
+
+    carregarMusicas();
+  }, []);
 
   const barras = [
     { label: "Energia", value: medias.energy, color: "#E97451" },
     { label: "Positividade", value: medias.valence, color: "#50C878" },
     { label: "Dançabilidade", value: medias.danceability, color: "#4A90E2" },
   ];
+
+  if (carregando) {
+    return (
+      <View
+        style={[
+          styles.container,
+          { alignItems: "center", justifyContent: "center" },
+        ]}
+      >
+        <ActivityIndicator size="large" color="#1DB954" />
+        <Text style={{ marginTop: 10 }}>Carregando suas músicas...</Text>
+      </View>
+    );
+  }
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -75,16 +129,26 @@ const AnaliseMusicasScreen = () => {
       <Text style={styles.sectionTitle}>Músicas Recentes</Text>
 
       {/* Lista de musicas */}
-      {mockMusicas.map((musica) => (
+      {musicas.map((musica) => (
         <View key={musica.id} style={styles.musicaItem}>
-          <FontAwesome5 name="music" size={20} color="#000000" />
+          <Image
+            source={{ uri: musica.album.images[0]?.url }}
+            style={styles.albumImage}
+          />
+
           <View style={styles.musicaInfo}>
-            <Text style={styles.musicaTitle}>{musica.title}</Text>
-            <Text style={styles.musicaArtist}>{musica.artist}</Text>
+            <Text style={styles.musicaTitle}>{musica.name}</Text>
+            <Text style={styles.musicaArtist}>
+              {musica.artists.map((a: any) => a.name).join(", ")}
+            </Text>
           </View>
           <View style={styles.musicaStats}>
-            <Text style={styles.statLabel}>E: {musica.energy}</Text>
-            <Text style={styles.statLabel}>P: {musica.valence}</Text>
+            <Text style={styles.statLabel}>
+              E: {(musica.energy || 0.7).toFixed(2)}
+            </Text>
+            <Text style={styles.statLabel}>
+              P: {(musica.valence || 0.6).toFixed(2)}
+            </Text>
           </View>
         </View>
       ))}
@@ -174,5 +238,11 @@ const styles = StyleSheet.create({
   },
   statLabel: {
     fontSize: 12,
+  },
+  albumImage: {
+    width: 50,
+    height: 50,
+    borderRadius: 5,
+    marginRight: 10,
   },
 });
