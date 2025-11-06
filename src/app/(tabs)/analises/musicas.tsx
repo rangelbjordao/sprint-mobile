@@ -1,6 +1,6 @@
 import BarraMedia from "@/components/analises/musicas/BarraMedia";
 import MusicaItem from "@/components/analises/musicas/MusicaItem";
-import { buscarMusicasRecentes } from "@/services/spotifyService";
+import { SpotifyService } from "@/services/spotifyService";
 import { Musica } from "@/types/spotify";
 import React, { useEffect, useState } from "react";
 import {
@@ -20,7 +20,7 @@ const AnaliseMusicasScreen = () => {
   useEffect(() => {
     const carregar = async () => {
       try {
-        const tracks = await buscarMusicasRecentes();
+        const tracks = await SpotifyService.buscarMusicasMaisOuvidas();
         setMusicas(tracks);
       } catch {
         setErro("Erro ao carregar músicas");
@@ -80,7 +80,7 @@ const AnaliseMusicasScreen = () => {
         ))}
       </View>
 
-      <Text style={styles.sectionTitle}>Músicas Recentes</Text>
+      <Text style={styles.sectionTitle}>Músicas Mais Ouvidas</Text>
 
       {musicas.map((musica) => (
         <MusicaItem key={musica.id} musica={musica} />
@@ -92,14 +92,8 @@ const AnaliseMusicasScreen = () => {
 export default AnaliseMusicasScreen;
 
 const styles = StyleSheet.create({
-  container: {
-    padding: 16,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    marginBottom: 16,
-  },
+  container: { padding: 16 },
+  title: { fontSize: 28, fontWeight: "bold", marginBottom: 16 },
   card: {
     backgroundColor: "#fff",
     borderRadius: 12,
@@ -113,9 +107,5 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     textAlign: "center",
   },
-  sectionTitle: {
-    fontSize: 22,
-    fontWeight: "bold",
-    marginBottom: 12,
-  },
+  sectionTitle: { fontSize: 22, fontWeight: "bold", marginBottom: 12 },
 });

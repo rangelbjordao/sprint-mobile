@@ -1,68 +1,34 @@
 import { Musica } from "@/types/spotify";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
+import { Platform } from "react-native";
+import Constants from "expo-constants";
 
-const TOKEN_STORAGE_KEY = "spotify_access_token";
-
-export async function salvarToken(token: string) {
-  try {
-    await AsyncStorage.setItem(TOKEN_STORAGE_KEY, token);
-  } catch (err) {
-    console.error("Erro ao salvar token:", err);
+const API_BASE = (() => {
+  if (Platform.OS === "web") {
+    // Web
+    return "http://localhost:8080";
   }
-}
 
-export async function carregarToken(): Promise<string | null> {
-  try {
-    return AsyncStorage.getItem(TOKEN_STORAGE_KEY);
-  } catch (err) {
-    console.error("Erro ao carregar token:", err);
-    return null;
-  }
-}
+  // app móvel ou emulador
+  const host = Constants.expoConfig?.hostUri?.split(":")[0];
+  return host ? `http://${host}:8080` : "http://localhost:8080";
+})();
 
-export async function removerToken() {
-  try {
-    await AsyncStorage.removeItem(TOKEN_STORAGE_KEY);
-  } catch (err) {
-    console.error("Erro ao remover token:", err);
-  }
-}
+export const SpotifyService = {
+  obterUrlLoginSpotify: async (tokenJwt: string): Promise<string> => {
+    const resposta = await axios.get(`${API_BASE}/spotify/auth`, {
+      headers: { Authorization: `Bearer ${tokenJwt}` },
+    });
+    return resposta.data;
+  },
 
-export async function trocarCodigoPorToken(
-  code: string,
-  codeVerifier: string,
-  clientId: string,
-  redirectUri: string,
-  tokenUrl: string
-): Promise<string> {
-  const body = new URLSearchParams({
-    grant_type: "authorization_code",
-    code,
-    redirect_uri: redirectUri,
-    client_id: clientId,
-    code_verifier: codeVerifier,
-  }).toString();
-
-  const resposta = await fetch(tokenUrl, {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body,
-  });
-
-  const data = await resposta.json();
-  if (!data.access_token) throw new Error("Não foi possível obter token");
-  return data.access_token;
-}
-
-export async function buscarMusicasRecentes(): Promise<Musica[]> {
-  const token = await carregarToken();
-  if (!token) throw new Error("Token não encontrado");
-
-  const resposta = await axios.get(
-    "https://api.spotify.com/v1/me/player/recently-played?limit=5",
-    { headers: { Authorization: `Bearer ${token}` } }
-  );
-
-  return resposta.data.items.map((item: any) => item.track);
-}
+  buscarMusicasMaisOuvidas: async (): Promise<Musica[]> => {
+    try {
+      const resposta = await axios.get(`${API_BASE}/musicas/top`);
+      return resposta.data.content;
+    } catch (err) {
+      console.error("Erro ao buscar músicas:", err);
+      return [];
+    }
+  },
+};

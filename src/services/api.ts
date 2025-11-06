@@ -1,8 +1,7 @@
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { EXPO_PUBLIC_API_BASE_URL } from "@env";
 
-export const API_BASE_URL = EXPO_PUBLIC_API_BASE_URL;
+export const API_BASE_URL = "http://localhost:8080";
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -14,16 +13,13 @@ const api = axios.create({
 
 api.interceptors.request.use(
   async (config) => {
-    const token = await AsyncStorage.getItem("spotify_access_token");
-
+    const token = await AsyncStorage.getItem("jwt_token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
 export default api;
