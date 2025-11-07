@@ -1,53 +1,69 @@
 import { useSpotifyAuth } from "@/hooks/useSpotifyAuth";
-import SpotifyService from "@/services/spotifyService";
 import { Feather, FontAwesome } from "@expo/vector-icons";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
+  Alert,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
-  Alert,
 } from "react-native";
-import * as WebBrowser from "expo-web-browser";
+import { useAuth } from "@/hooks/useAuth";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const ConfiguracoesScreen = () => {
   const [usuario, setUsuario] = useState("");
-  const [mensagemSalva, setMensagemSalva] = useState("");
-
+  const [senha, setSenha] = useState("");
+  const [email, setEmail] = useState("");
+  const [isCadastro, setIsCadastro] = useState(false);
+  const [mensagem, setMensagem] = useState("");
+  const { token, login, logout, registrar, loading, error } = useAuth();
   const {
     accessToken,
-    login,
-    logout,
-    loading: isTokenLoading,
-    error,
+    logout: logoutSpotify,
+    loading: isTokenLoadingSpotify,
   } = useSpotifyAuth();
 
-  // 🔑 JWT fixo apenas para testes
-  const tokenJwtDoUsuario =
-    "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0ZUBlbWFpbC5jb20iLCJpc3MiOiJBUEkgRW1vdGlXYXZlIiwiZXhwIjoxNzYyNjEzNzU0fQ.3Bubob7g6Y7W8QXNjNzouRP75nyRNJgYVqxg4asB_8I";
-
-  const salvarUsuario = () => {
-    if (usuario.trim().length < 1) {
-      setMensagemSalva("Digite pelo menos 1 caractere.");
-      return;
+  const handleLoginLogout = async () => {
+    setMensagem("");
+    try {
+      if (token) {
+        await logout();
+        setMensagem("Logout realizado com sucesso!");
+      } else if (isCadastro) {
+        if (!usuario || !email || !senha) {
+          setMensagem("Preencha todos os campos para cadastro");
+          return;
+        }
+        await registrar(usuario, email, senha);
+        setMensagem("Cadastro realizado! Faça login.");
+        setIsCadastro(false);
+      } else {
+        if (!email || !senha) {
+          setMensagem("Digite email e senha");
+          return;
+        }
+        await login(email, senha);
+        setMensagem("Login realizado com sucesso!");
+      }
+    } catch (err: any) {
+      setMensagem("Erro: " + (error || err.message));
     }
-    setMensagemSalva("Usuário salvo com sucesso!");
   };
 
-  const handleSpotifyLogin = async () => {
-    try {
-      const url = await SpotifyService.obterUrlLoginSpotify(tokenJwtDoUsuario);
-
-      // Corrige 127.0.0.1 para IP do PC
-      const urlCorrigida = url.replace("127.0.0.1", "192.168.15.58");
-
-      // Abre no navegador do celular
-      await WebBrowser.openBrowserAsync(urlCorrigida);
-    } catch (erro) {
-      console.error("Erro ao iniciar login do Spotify:", erro);
+  const handleSpotify = async () => {
+    if (accessToken) {
+      logoutSpotify();
+      Alert.alert("Spotify", "Você saiu do Spotify.");
+    } else {
+      try {
+        console.log("Iniciar login Spotify...");
+      } catch (erro) {
+        console.error(erro);
+        Alert.alert("Erro", "Falha ao conectar com Spotify.");
+      }
     }
   };
 
@@ -56,29 +72,69 @@ const ConfiguracoesScreen = () => {
       <Text style={styles.titulo}>Configurações</Text>
 
       <View style={styles.card}>
-        <Text style={styles.cardTitulo}>Perfil</Text>
+        <Text style={styles.cardTitulo}>
+          {isCadastro ? "Cadastro" : "Perfil"}
+        </Text>
+
+        {isCadastro && (
+          <View style={styles.inputGroup}>
+            <Feather name="user" size={20} color="#666" style={styles.icone} />
+            <TextInput
+              style={styles.input}
+              placeholder="Usuário"
+              value={usuario}
+              onChangeText={setUsuario}
+            />
+          </View>
+        )}
+
         <View style={styles.inputGroup}>
-          <Feather name="user" size={20} color="#666" style={styles.icone} />
+          <Feather name="mail" size={20} color="#666" style={styles.icone} />
           <TextInput
             style={styles.input}
-            placeholder="Usuário"
-            value={usuario}
-            onChangeText={setUsuario}
+            placeholder="Email"
+            value={email}
+            onChangeText={setEmail}
+            keyboardType="email-address"
+            autoCapitalize="none"
           />
         </View>
 
-        <TouchableOpacity style={styles.botaoSalvar} onPress={salvarUsuario}>
-          <Text style={styles.textoBotaoSalvar}>Salvar Usuário</Text>
+        <View style={styles.inputGroup}>
+          <Feather name="lock" size={20} color="#666" style={styles.icone} />
+          <TextInput
+            style={styles.input}
+            placeholder="Senha"
+            value={senha}
+            onChangeText={setSenha}
+            secureTextEntry
+          />
+        </View>
+
+        <TouchableOpacity
+          style={styles.botaoSalvar}
+          onPress={handleLoginLogout}
+        >
+          <Text style={styles.textoBotaoSalvar}>
+            {isCadastro ? "Cadastrar" : token ? "Logout" : "Login"}
+          </Text>
         </TouchableOpacity>
-        {mensagemSalva !== "" && (
-          <Text style={styles.mensagem}>{mensagemSalva}</Text>
-        )}
+
+        <TouchableOpacity onPress={() => setIsCadastro(!isCadastro)}>
+          <Text style={[styles.mensagem, { color: "#4A90E2", marginTop: 8 }]}>
+            {isCadastro
+              ? "Já tem conta? Faça login"
+              : "Não tem conta? Cadastre-se"}
+          </Text>
+        </TouchableOpacity>
+
+        {mensagem ? <Text style={styles.mensagem}>{mensagem}</Text> : null}
       </View>
 
       <View style={styles.card}>
         <Text style={styles.cardTitulo}>Conexões</Text>
 
-        {isTokenLoading ? (
+        {isTokenLoadingSpotify ? (
           <ActivityIndicator color="#1DB954" />
         ) : (
           <TouchableOpacity
@@ -86,44 +142,13 @@ const ConfiguracoesScreen = () => {
               styles.botaoSpotify,
               accessToken ? styles.botaoDesconectar : {},
             ]}
-            onPress={async () => {
-              if (accessToken) {
-                logout();
-                Alert.alert(
-                  "Desconectado",
-                  "Você saiu do Spotify com sucesso."
-                );
-              } else {
-                try {
-                  console.log("Obtendo URL de login do Spotify...");
-                  let url = await SpotifyService.obterUrlLoginSpotify(
-                    tokenJwtDoUsuario
-                  );
-
-                  // Corrige o redirect_uri de 127.0.0.1 para o IP da máquina
-                  url = url.replace("127.0.0.1", "192.168.15.58");
-                  console.log("URL corrigida:", url);
-
-                  // Abre no navegador do celular
-                  await WebBrowser.openBrowserAsync(url);
-                } catch (erro) {
-                  console.error("Erro ao iniciar login do Spotify:", erro);
-                  Alert.alert("Erro", "Falha ao conectar com Spotify.");
-                }
-              }
-            }}
+            onPress={handleSpotify}
           >
             <FontAwesome name="spotify" size={20} color="#FFF" />
             <Text style={styles.textoBotao}>
               {accessToken ? "Desconectar do Spotify" : "Conectar com Spotify"}
             </Text>
           </TouchableOpacity>
-        )}
-
-        {error && (
-          <Text style={{ color: "red", marginTop: 8 }}>
-            Erro: {error.toString()}
-          </Text>
         )}
       </View>
     </View>
@@ -134,11 +159,7 @@ export default ConfiguracoesScreen;
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 16, backgroundColor: "#F5F5F5" },
-  titulo: {
-    fontSize: 26,
-    fontWeight: "bold",
-    marginBottom: 20,
-  },
+  titulo: { fontSize: 26, fontWeight: "bold", marginBottom: 20 },
   card: {
     backgroundColor: "#FFF",
     borderRadius: 12,
@@ -146,11 +167,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     elevation: 2,
   },
-  cardTitulo: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 12,
-  },
+  cardTitulo: { fontSize: 18, fontWeight: "bold", marginBottom: 12 },
   inputGroup: {
     flexDirection: "row",
     alignItems: "center",
@@ -160,14 +177,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     marginBottom: 12,
   },
-  icone: {
-    marginRight: 10,
-  },
-  input: {
-    flex: 1,
-    height: 45,
-    fontSize: 16,
-  },
+  icone: { marginRight: 10 },
+  input: { flex: 1, height: 45, fontSize: 16 },
   botaoSalvar: {
     backgroundColor: "#4A90E2",
     paddingVertical: 10,
@@ -175,11 +186,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 10,
   },
-  textoBotaoSalvar: {
-    color: "#FFF",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
+  textoBotaoSalvar: { color: "#FFF", fontSize: 16, fontWeight: "bold" },
   botaoSpotify: {
     flexDirection: "row",
     alignItems: "center",
@@ -188,12 +195,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 8,
   },
-  botaoConectado: {
-    backgroundColor: "#5a8e6b",
-  },
-  botaoDesconectar: {
-    backgroundColor: "#b02c1b",
-  },
+  botaoDesconectar: { backgroundColor: "#b02c1b" },
   textoBotao: {
     color: "#FFF",
     fontSize: 16,
