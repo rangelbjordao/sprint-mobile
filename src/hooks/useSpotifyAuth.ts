@@ -1,7 +1,10 @@
+import { useState, useCallback } from "react";
+import { Platform } from "react-native";
+import * as WebBrowser from "expo-web-browser";
 import { SpotifyService } from "@/services/spotifyService";
-import { useCallback, useState } from "react";
 
 export function useSpotifyAuth() {
+  const [accessToken, setAccessToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -10,8 +13,19 @@ export function useSpotifyAuth() {
     setError(null);
 
     try {
+      // Pega URL de login do backend
       const urlLogin = await SpotifyService.obterUrlLoginSpotify(tokenJwt);
-      window.location.href = urlLogin;
+
+      if (Platform.OS === "web") {
+        // Web: redireciona normalmente
+        window.location.href = urlLogin;
+      } else {
+        // Mobile (Expo Go / iOS / Android): abrir navegador interno
+        await WebBrowser.openBrowserAsync(urlLogin);
+
+        // Marca como conectado (placeholder)
+        setAccessToken("usuario-conectado");
+      }
     } catch (err) {
       setError("Erro ao obter URL de login do Spotify");
     } finally {
@@ -19,5 +33,15 @@ export function useSpotifyAuth() {
     }
   }, []);
 
-  return { login, loading, error };
+  const logout = useCallback(() => {
+    setAccessToken(null);
+  }, []);
+
+  return {
+    accessToken,
+    login,
+    logout,
+    loading,
+    error,
+  };
 }

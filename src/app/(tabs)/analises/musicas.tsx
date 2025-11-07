@@ -20,7 +20,11 @@ const AnaliseMusicasScreen = () => {
   useEffect(() => {
     const carregar = async () => {
       try {
-        const tracks = await SpotifyService.buscarMusicasMaisOuvidas();
+        const tokenJwtDoUsuario =
+          "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0ZUBlbWFpbC5jb20iLCJpc3MiOiJBUEkgRW1vdGlXYXZlIiwiZXhwIjoxNzYyNTkwODEwfQ.UnIOeky-isJoG7XEFl6sljtGSV_BkYkmn64OmGTbBgw";
+        const tracks = await SpotifyService.buscarMusicasMaisOuvidas(
+          tokenJwtDoUsuario
+        );
         setMusicas(tracks);
       } catch {
         setErro("Erro ao carregar músicas");

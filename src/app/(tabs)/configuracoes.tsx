@@ -1,27 +1,32 @@
+import { useSpotifyAuth } from "@/hooks/useSpotifyAuth";
+import SpotifyService from "@/services/spotifyService";
 import { Feather, FontAwesome } from "@expo/vector-icons";
-import React, { useCallback, useState } from "react";
+import React, { useState } from "react";
 import {
+  ActivityIndicator,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
-  ActivityIndicator,
+  Alert,
 } from "react-native";
-import { useSpotifyAuth } from "@/hooks/useSpotifyAuth";
-import { useFocusEffect } from "expo-router";
 
 const ConfiguracoesScreen = () => {
   const [usuario, setUsuario] = useState("");
   const [mensagemSalva, setMensagemSalva] = useState("");
-  const { accessToken, isTokenLoading, loadToken, login, logout } =
-    useSpotifyAuth();
 
-  useFocusEffect(
-    useCallback(() => {
-      loadToken();
-    }, [])
-  );
+  const {
+    accessToken,
+    login,
+    logout,
+    loading: isTokenLoading,
+    error,
+  } = useSpotifyAuth();
+
+  // 🔑 JWT fixo apenas para testes
+  const tokenJwtDoUsuario =
+    "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0ZUBlbWFpbC5jb20iLCJpc3MiOiJBUEkgRW1vdGlXYXZlIiwiZXhwIjoxNzYyNTkwODEwfQ.UnIOeky-isJoG7XEFl6sljtGSV_BkYkmn64OmGTbBgw";
 
   const salvarUsuario = () => {
     if (usuario.trim().length < 1) {
@@ -29,6 +34,20 @@ const ConfiguracoesScreen = () => {
       return;
     }
     setMensagemSalva("Usuário salvo com sucesso!");
+  };
+
+  const handleSpotify = async () => {
+    try {
+      if (accessToken) {
+        logout();
+        Alert.alert("Desconectado", "Você saiu do Spotify com sucesso.");
+      } else {
+        await login(tokenJwtDoUsuario);
+      }
+    } catch (err) {
+      console.error("Erro ao conectar com Spotify:", err);
+      Alert.alert("Erro", "Falha ao conectar com Spotify.");
+    }
   };
 
   return (
@@ -57,6 +76,7 @@ const ConfiguracoesScreen = () => {
 
       <View style={styles.card}>
         <Text style={styles.cardTitulo}>Conexões</Text>
+
         {isTokenLoading ? (
           <ActivityIndicator color="#1DB954" />
         ) : (
@@ -65,13 +85,36 @@ const ConfiguracoesScreen = () => {
               styles.botaoSpotify,
               accessToken ? styles.botaoDesconectar : {},
             ]}
-            onPress={accessToken ? logout : login}
+            onPress={async () => {
+              if (accessToken) {
+                logout();
+              } else {
+                try {
+                  console.log("Obtendo URL de login do Spotify...");
+                  const url = await SpotifyService.obterUrlLoginSpotify(
+                    tokenJwtDoUsuario
+                  );
+                  console.log("URL recebida:", url);
+
+                  // Abrir a URL no navegador
+                  window.open(url, "_blank");
+                } catch (erro) {
+                  console.error("Erro ao iniciar login do Spotify:", erro);
+                }
+              }
+            }}
           >
             <FontAwesome name="spotify" size={20} color="#FFF" />
             <Text style={styles.textoBotao}>
               {accessToken ? "Desconectar do Spotify" : "Conectar com Spotify"}
             </Text>
           </TouchableOpacity>
+        )}
+
+        {error && (
+          <Text style={{ color: "red", marginTop: 8 }}>
+            Erro: {error.toString()}
+          </Text>
         )}
       </View>
     </View>
