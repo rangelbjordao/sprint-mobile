@@ -11,12 +11,19 @@ export const useAuth = () => {
 
   useEffect(() => {
     const loadToken = async () => {
-      const storedToken = await AsyncStorage.getItem(TOKEN_KEY);
-      if (storedToken) {
-        console.log("[useAuth] Token encontrado no AsyncStorage:", storedToken);
-        setToken(storedToken);
-      } else {
-        console.log("[useAuth] Nenhum token encontrado no AsyncStorage.");
+      try {
+        const storedToken = await AsyncStorage.getItem(TOKEN_KEY);
+        if (storedToken) {
+          console.log(
+            "[useAuth] Token encontrado no AsyncStorage:",
+            storedToken
+          );
+          setToken(storedToken);
+        } else {
+          console.log("[useAuth] Nenhum token encontrado no AsyncStorage.");
+        }
+      } catch (err) {
+        console.error("[useAuth] Erro ao carregar token do AsyncStorage:", err);
       }
     };
     loadToken();
@@ -30,7 +37,9 @@ export const useAuth = () => {
       const response = await api.post("/auth", { email, password });
       console.log("[useAuth] Resposta do login:", response.data);
 
-      const jwt = response.data.tokenJWT;
+      const jwt = response.data?.tokenJWT;
+      if (!jwt) throw new Error("Token JWT não recebido do backend");
+
       setToken(jwt);
       await AsyncStorage.setItem(TOKEN_KEY, jwt);
       console.log("[useAuth] Token salvo no AsyncStorage:", jwt);
