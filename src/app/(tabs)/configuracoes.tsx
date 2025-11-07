@@ -1,25 +1,54 @@
+import { useSpotifyAuth } from "@/hooks/useSpotifyAuth";
+import SpotifyService from "@/services/spotifyService";
 import { Feather, FontAwesome } from "@expo/vector-icons";
 import React, { useState } from "react";
 import {
+  ActivityIndicator,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
+  Alert,
 } from "react-native";
+import * as WebBrowser from "expo-web-browser";
 
-export default function ConfiguracoesScreen() {
+const ConfiguracoesScreen = () => {
   const [usuario, setUsuario] = useState("");
-  const [spotifyConectado, setSpotifyConectado] = useState(false);
   const [mensagemSalva, setMensagemSalva] = useState("");
+
+  const {
+    accessToken,
+    login,
+    logout,
+    loading: isTokenLoading,
+    error,
+  } = useSpotifyAuth();
+
+  // 🔑 JWT fixo apenas para testes
+  const tokenJwtDoUsuario =
+    "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0ZUBlbWFpbC5jb20iLCJpc3MiOiJBUEkgRW1vdGlXYXZlIiwiZXhwIjoxNzYyNjEzNzU0fQ.3Bubob7g6Y7W8QXNjNzouRP75nyRNJgYVqxg4asB_8I";
 
   const salvarUsuario = () => {
     if (usuario.trim().length < 1) {
       setMensagemSalva("Digite pelo menos 1 caractere.");
       return;
     }
+    setMensagemSalva("Usuário salvo com sucesso!");
+  };
 
-    setMensagemSalva(`Usuário salvo com sucesso!`);
+  const handleSpotifyLogin = async () => {
+    try {
+      const url = await SpotifyService.obterUrlLoginSpotify(tokenJwtDoUsuario);
+
+      // Corrige 127.0.0.1 para IP do PC
+      const urlCorrigida = url.replace("127.0.0.1", "192.168.15.58");
+
+      // Abre no navegador do celular
+      await WebBrowser.openBrowserAsync(urlCorrigida);
+    } catch (erro) {
+      console.error("Erro ao iniciar login do Spotify:", erro);
+    }
   };
 
   return (
@@ -48,24 +77,60 @@ export default function ConfiguracoesScreen() {
 
       <View style={styles.card}>
         <Text style={styles.cardTitulo}>Conexões</Text>
-        <TouchableOpacity
-          style={[
-            styles.botaoSpotify,
-            spotifyConectado && styles.botaoConectado,
-          ]}
-          onPress={() => setSpotifyConectado(!spotifyConectado)}
-        >
-          <FontAwesome name="spotify" size={20} color="#FFF" />
-          <Text style={styles.textoBotao}>
-            {spotifyConectado
-              ? "Conectado com Spotify"
-              : "Conectar com Spotify"}
+
+        {isTokenLoading ? (
+          <ActivityIndicator color="#1DB954" />
+        ) : (
+          <TouchableOpacity
+            style={[
+              styles.botaoSpotify,
+              accessToken ? styles.botaoDesconectar : {},
+            ]}
+            onPress={async () => {
+              if (accessToken) {
+                logout();
+                Alert.alert(
+                  "Desconectado",
+                  "Você saiu do Spotify com sucesso."
+                );
+              } else {
+                try {
+                  console.log("Obtendo URL de login do Spotify...");
+                  let url = await SpotifyService.obterUrlLoginSpotify(
+                    tokenJwtDoUsuario
+                  );
+
+                  // Corrige o redirect_uri de 127.0.0.1 para o IP da máquina
+                  url = url.replace("127.0.0.1", "192.168.15.58");
+                  console.log("URL corrigida:", url);
+
+                  // Abre no navegador do celular
+                  await WebBrowser.openBrowserAsync(url);
+                } catch (erro) {
+                  console.error("Erro ao iniciar login do Spotify:", erro);
+                  Alert.alert("Erro", "Falha ao conectar com Spotify.");
+                }
+              }
+            }}
+          >
+            <FontAwesome name="spotify" size={20} color="#FFF" />
+            <Text style={styles.textoBotao}>
+              {accessToken ? "Desconectar do Spotify" : "Conectar com Spotify"}
+            </Text>
+          </TouchableOpacity>
+        )}
+
+        {error && (
+          <Text style={{ color: "red", marginTop: 8 }}>
+            Erro: {error.toString()}
           </Text>
-        </TouchableOpacity>
+        )}
       </View>
     </View>
   );
-}
+};
+
+export default ConfiguracoesScreen;
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 16, backgroundColor: "#F5F5F5" },
@@ -115,7 +180,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
   },
-
   botaoSpotify: {
     flexDirection: "row",
     alignItems: "center",
@@ -126,6 +190,9 @@ const styles = StyleSheet.create({
   },
   botaoConectado: {
     backgroundColor: "#5a8e6b",
+  },
+  botaoDesconectar: {
+    backgroundColor: "#b02c1b",
   },
   textoBotao: {
     color: "#FFF",
