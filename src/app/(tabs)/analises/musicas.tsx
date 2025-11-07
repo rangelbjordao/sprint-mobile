@@ -21,7 +21,7 @@ const AnaliseMusicasScreen = () => {
     const carregar = async () => {
       try {
         const tokenJwtDoUsuario =
-          "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0ZUBlbWFpbC5jb20iLCJpc3MiOiJBUEkgRW1vdGlXYXZlIiwiZXhwIjoxNzYyNTkwODEwfQ.UnIOeky-isJoG7XEFl6sljtGSV_BkYkmn64OmGTbBgw";
+          "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0ZUBlbWFpbC5jb20iLCJpc3MiOiJBUEkgRW1vdGlXYXZlIiwiZXhwIjoxNzYyNjEzNzU0fQ.3Bubob7g6Y7W8QXNjNzouRP75nyRNJgYVqxg4asB_8I";
         const tracks = await SpotifyService.buscarMusicasMaisOuvidas(
           tokenJwtDoUsuario
         );

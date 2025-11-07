@@ -14,7 +14,10 @@ export function useSpotifyAuth() {
 
     try {
       // Pega URL de login do backend
-      const urlLogin = await SpotifyService.obterUrlLoginSpotify(tokenJwt);
+      let urlLogin = await SpotifyService.obterUrlLoginSpotify(tokenJwt);
+
+      // Corrige redirect_uri para IP da máquina (Expo Go)
+      urlLogin = urlLogin.replace("127.0.0.1", "192.168.15.58");
 
       if (Platform.OS === "web") {
         // Web: redireciona normalmente
@@ -27,6 +30,7 @@ export function useSpotifyAuth() {
         setAccessToken("usuario-conectado");
       }
     } catch (err) {
+      console.error("Erro ao conectar com Spotify:", err);
       setError("Erro ao obter URL de login do Spotify");
     } finally {
       setLoading(false);

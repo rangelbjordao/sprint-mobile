@@ -11,6 +11,7 @@ import {
   View,
   Alert,
 } from "react-native";
+import * as WebBrowser from "expo-web-browser";
 
 const ConfiguracoesScreen = () => {
   const [usuario, setUsuario] = useState("");
@@ -26,7 +27,7 @@ const ConfiguracoesScreen = () => {
 
   // 🔑 JWT fixo apenas para testes
   const tokenJwtDoUsuario =
-    "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0ZUBlbWFpbC5jb20iLCJpc3MiOiJBUEkgRW1vdGlXYXZlIiwiZXhwIjoxNzYyNTkwODEwfQ.UnIOeky-isJoG7XEFl6sljtGSV_BkYkmn64OmGTbBgw";
+    "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0ZUBlbWFpbC5jb20iLCJpc3MiOiJBUEkgRW1vdGlXYXZlIiwiZXhwIjoxNzYyNjEzNzU0fQ.3Bubob7g6Y7W8QXNjNzouRP75nyRNJgYVqxg4asB_8I";
 
   const salvarUsuario = () => {
     if (usuario.trim().length < 1) {
@@ -36,17 +37,17 @@ const ConfiguracoesScreen = () => {
     setMensagemSalva("Usuário salvo com sucesso!");
   };
 
-  const handleSpotify = async () => {
+  const handleSpotifyLogin = async () => {
     try {
-      if (accessToken) {
-        logout();
-        Alert.alert("Desconectado", "Você saiu do Spotify com sucesso.");
-      } else {
-        await login(tokenJwtDoUsuario);
-      }
-    } catch (err) {
-      console.error("Erro ao conectar com Spotify:", err);
-      Alert.alert("Erro", "Falha ao conectar com Spotify.");
+      const url = await SpotifyService.obterUrlLoginSpotify(tokenJwtDoUsuario);
+
+      // Corrige 127.0.0.1 para IP do PC
+      const urlCorrigida = url.replace("127.0.0.1", "192.168.15.58");
+
+      // Abre no navegador do celular
+      await WebBrowser.openBrowserAsync(urlCorrigida);
+    } catch (erro) {
+      console.error("Erro ao iniciar login do Spotify:", erro);
     }
   };
 
@@ -88,18 +89,26 @@ const ConfiguracoesScreen = () => {
             onPress={async () => {
               if (accessToken) {
                 logout();
+                Alert.alert(
+                  "Desconectado",
+                  "Você saiu do Spotify com sucesso."
+                );
               } else {
                 try {
                   console.log("Obtendo URL de login do Spotify...");
-                  const url = await SpotifyService.obterUrlLoginSpotify(
+                  let url = await SpotifyService.obterUrlLoginSpotify(
                     tokenJwtDoUsuario
                   );
-                  console.log("URL recebida:", url);
 
-                  // Abrir a URL no navegador
-                  window.open(url, "_blank");
+                  // Corrige o redirect_uri de 127.0.0.1 para o IP da máquina
+                  url = url.replace("127.0.0.1", "192.168.15.58");
+                  console.log("URL corrigida:", url);
+
+                  // Abre no navegador do celular
+                  await WebBrowser.openBrowserAsync(url);
                 } catch (erro) {
                   console.error("Erro ao iniciar login do Spotify:", erro);
+                  Alert.alert("Erro", "Falha ao conectar com Spotify.");
                 }
               }
             }}
