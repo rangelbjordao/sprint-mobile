@@ -1,6 +1,7 @@
+import { useAuth } from "@/hooks/useAuth";
 import { useSpotifyAuth } from "@/hooks/useSpotifyAuth";
 import { Feather, FontAwesome } from "@expo/vector-icons";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -10,8 +11,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { useAuth } from "@/hooks/useAuth";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const ConfiguracoesScreen = () => {
   const [usuario, setUsuario] = useState("");

@@ -30,7 +30,7 @@ export const useAuth = () => {
       const response = await api.post("/auth", { email, password });
       console.log("[useAuth] Resposta do login:", response.data);
 
-      const jwt = response.data.token;
+      const jwt = response.data.tokenJWT;
       setToken(jwt);
       await AsyncStorage.setItem(TOKEN_KEY, jwt);
       console.log("[useAuth] Token salvo no AsyncStorage:", jwt);
