@@ -33,33 +33,30 @@ export const useAuth = () => {
     setLoading(true);
     setError(null);
     try {
-      console.log("[useAuth] Tentando login com:", { email, password });
       const response = await api.post("/auth", { email, password });
-      console.log("[useAuth] Resposta do login:", response.data);
-
       const jwt = response.data?.tokenJWT;
-      if (!jwt) throw new Error("Token JWT não recebido do backend");
+      if (!jwt) {
+        const msg = "Token JWT não recebido do backend";
+        setError(msg);
+        return { success: false, mensagem: msg };
+      }
 
       setToken(jwt);
       await AsyncStorage.setItem(TOKEN_KEY, jwt);
-      console.log("[useAuth] Token salvo no AsyncStorage:", jwt);
+      return { success: true };
     } catch (err: any) {
-      console.error(
-        "[useAuth] Erro ao logar:",
-        err.response?.data || err.message
-      );
-      setError(err.response?.data?.message || err.message || "Erro ao logar");
-      throw err;
+      const msg =
+        err.response?.data?.mensagem || err.message || "Erro ao logar";
+      setError(msg);
+      return { success: false, mensagem: msg };
     } finally {
       setLoading(false);
     }
   };
 
   const logout = async () => {
-    console.log("[useAuth] Logout iniciado");
     setToken(null);
     await AsyncStorage.removeItem(TOKEN_KEY);
-    console.log("[useAuth] Token removido do AsyncStorage");
   };
 
   const registrar = async (
@@ -70,26 +67,17 @@ export const useAuth = () => {
     setLoading(true);
     setError(null);
     try {
-      console.log("[useAuth] Tentando cadastro com:", {
-        username,
-        email,
-        password,
-      });
       const response = await api.post("/auth/criar", {
         username,
         email,
         password,
       });
-      console.log("[useAuth] Resposta do cadastro:", response.data);
+      return { success: true, data: response.data };
     } catch (err: any) {
-      console.error(
-        "[useAuth] Erro ao cadastrar:",
-        err.response?.data || err.message
-      );
-      setError(
-        err.response?.data?.message || err.message || "Erro ao cadastrar"
-      );
-      throw err;
+      const msg =
+        err.response?.data?.mensagem || err.message || "Erro ao cadastrar";
+      setError(msg);
+      return { success: false, mensagem: msg };
     } finally {
       setLoading(false);
     }

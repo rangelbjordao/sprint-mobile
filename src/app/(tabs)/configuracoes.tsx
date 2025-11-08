@@ -5,6 +5,9 @@ import React, { useState } from "react";
 import {
   ActivityIndicator,
   Alert,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -17,8 +20,8 @@ const ConfiguracoesScreen = () => {
   const [senha, setSenha] = useState("");
   const [email, setEmail] = useState("");
   const [isCadastro, setIsCadastro] = useState(false);
-  const [mensagem, setMensagem] = useState("");
-  const { token, login, logout, registrar, loading, error } = useAuth();
+
+  const { token, login, logout, registrar, loading } = useAuth();
   const {
     accessToken,
     logout: logoutSpotify,
@@ -26,29 +29,35 @@ const ConfiguracoesScreen = () => {
   } = useSpotifyAuth();
 
   const handleLoginLogout = async () => {
-    setMensagem("");
-    try {
-      if (token) {
-        await logout();
-        setMensagem("Logout realizado com sucesso!");
-      } else if (isCadastro) {
-        if (!usuario || !email || !senha) {
-          setMensagem("Preencha todos os campos para cadastro");
-          return;
-        }
-        await registrar(usuario, email, senha);
-        setMensagem("Cadastro realizado! Faça login.");
+    if (token) {
+      await logout();
+      Alert.alert("Sucesso", "Logout realizado com sucesso!");
+      return;
+    }
+
+    if (isCadastro) {
+      if (!usuario || !email || !senha) {
+        Alert.alert("Atenção", "Preencha todos os campos para cadastro");
+        return;
+      }
+      const resultado = await registrar(usuario, email, senha);
+      if (resultado.success) {
+        Alert.alert("Sucesso", "Cadastro realizado! Faça login.");
         setIsCadastro(false);
       } else {
-        if (!email || !senha) {
-          setMensagem("Digite email e senha");
-          return;
-        }
-        await login(email, senha);
-        setMensagem("Login realizado com sucesso!");
+        Alert.alert("Erro", resultado.mensagem || "Erro ao cadastrar");
       }
-    } catch (err: any) {
-      setMensagem("Erro: " + (error || err.message));
+    } else {
+      if (!email || !senha) {
+        Alert.alert("Atenção", "Digite email e senha");
+        return;
+      }
+      const resultado = await login(email, senha);
+      if (resultado.success) {
+        Alert.alert("Sucesso", "Login realizado com sucesso!");
+      } else {
+        Alert.alert("Erro", resultado.mensagem || "Erro ao logar");
+      }
     }
   };
 
@@ -60,105 +69,160 @@ const ConfiguracoesScreen = () => {
       try {
         console.log("Iniciar login Spotify...");
       } catch (erro) {
-        console.error(erro);
         Alert.alert("Erro", "Falha ao conectar com Spotify.");
       }
     }
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.titulo}>Configurações</Text>
+    <KeyboardAvoidingView
+      style={{ flex: 1, backgroundColor: "#F5F5F5" }}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+    >
+      <ScrollView contentContainerStyle={styles.container}>
+        <Text style={styles.titulo}>Configurações</Text>
 
-      <View style={styles.card}>
-        <Text style={styles.cardTitulo}>
-          {isCadastro ? "Cadastro" : "Perfil"}
-        </Text>
+        {token ? (
+          <View style={styles.card}>
+            <Text style={styles.cardTitulo}>Bem-vindo, {usuario || email}</Text>
+            <TouchableOpacity
+              style={styles.botaoSalvar}
+              onPress={handleLoginLogout}
+              disabled={loading}
+            >
+              {loading ? (
+                <ActivityIndicator color="#FFF" />
+              ) : (
+                <Text style={styles.textoBotaoSalvar}>Logout</Text>
+              )}
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <View style={styles.card}>
+            <Text style={styles.cardTitulo}>
+              {isCadastro ? "Cadastro" : "Login"}
+            </Text>
 
-        {isCadastro && (
-          <View style={styles.inputGroup}>
-            <Feather name="user" size={20} color="#666" style={styles.icone} />
-            <TextInput
-              style={styles.input}
-              placeholder="Usuário"
-              value={usuario}
-              onChangeText={setUsuario}
-            />
+            {isCadastro && (
+              <View style={styles.inputGroup}>
+                <Feather
+                  name="user"
+                  size={20}
+                  color="#666"
+                  style={styles.icone}
+                />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Usuário"
+                  value={usuario}
+                  onChangeText={setUsuario}
+                />
+              </View>
+            )}
+
+            <View style={styles.inputGroup}>
+              <Feather
+                name="mail"
+                size={20}
+                color="#666"
+                style={styles.icone}
+              />
+              <TextInput
+                style={styles.input}
+                placeholder="Email"
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+                autoCapitalize="none"
+              />
+            </View>
+
+            <View style={styles.inputGroup}>
+              <Feather
+                name="lock"
+                size={20}
+                color="#666"
+                style={styles.icone}
+              />
+              <TextInput
+                style={styles.input}
+                placeholder="Senha"
+                value={senha}
+                onChangeText={setSenha}
+                secureTextEntry
+              />
+            </View>
+
+            <TouchableOpacity
+              style={styles.botaoSalvar}
+              onPress={handleLoginLogout}
+              disabled={loading}
+            >
+              {loading ? (
+                <ActivityIndicator color="#FFF" />
+              ) : (
+                <Text style={styles.textoBotaoSalvar}>
+                  {isCadastro ? "Cadastrar" : "Login"}
+                </Text>
+              )}
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => setIsCadastro(!isCadastro)}
+              style={{ marginTop: 10 }}
+            >
+              <Text style={[styles.mensagem, { color: "#4A90E2" }]}>
+                {isCadastro
+                  ? "Já tem conta? Faça login"
+                  : "Não tem conta? Cadastre-se"}
+              </Text>
+            </TouchableOpacity>
           </View>
         )}
 
-        <View style={styles.inputGroup}>
-          <Feather name="mail" size={20} color="#666" style={styles.icone} />
-          <TextInput
-            style={styles.input}
-            placeholder="Email"
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
-            autoCapitalize="none"
-          />
+        <View style={styles.card}>
+          <Text style={styles.cardTitulo}>Conexões</Text>
+
+          {isTokenLoadingSpotify ? (
+            <ActivityIndicator color="#1DB954" />
+          ) : (
+            <TouchableOpacity
+              style={[
+                styles.botaoSpotify,
+                accessToken ? styles.botaoDesconectar : {},
+                { opacity: isTokenLoadingSpotify ? 0.6 : 1 },
+              ]}
+              onPress={handleSpotify}
+              disabled={isTokenLoadingSpotify}
+            >
+              <FontAwesome name="spotify" size={20} color="#FFF" />
+              <Text style={styles.textoBotao}>
+                {accessToken
+                  ? "Desconectar do Spotify"
+                  : "Conectar com Spotify"}
+              </Text>
+            </TouchableOpacity>
+          )}
         </View>
-
-        <View style={styles.inputGroup}>
-          <Feather name="lock" size={20} color="#666" style={styles.icone} />
-          <TextInput
-            style={styles.input}
-            placeholder="Senha"
-            value={senha}
-            onChangeText={setSenha}
-            secureTextEntry
-          />
-        </View>
-
-        <TouchableOpacity
-          style={styles.botaoSalvar}
-          onPress={handleLoginLogout}
-        >
-          <Text style={styles.textoBotaoSalvar}>
-            {isCadastro ? "Cadastrar" : token ? "Logout" : "Login"}
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={() => setIsCadastro(!isCadastro)}>
-          <Text style={[styles.mensagem, { color: "#4A90E2", marginTop: 8 }]}>
-            {isCadastro
-              ? "Já tem conta? Faça login"
-              : "Não tem conta? Cadastre-se"}
-          </Text>
-        </TouchableOpacity>
-
-        {mensagem ? <Text style={styles.mensagem}>{mensagem}</Text> : null}
-      </View>
-
-      <View style={styles.card}>
-        <Text style={styles.cardTitulo}>Conexões</Text>
-
-        {isTokenLoadingSpotify ? (
-          <ActivityIndicator color="#1DB954" />
-        ) : (
-          <TouchableOpacity
-            style={[
-              styles.botaoSpotify,
-              accessToken ? styles.botaoDesconectar : {},
-            ]}
-            onPress={handleSpotify}
-          >
-            <FontAwesome name="spotify" size={20} color="#FFF" />
-            <Text style={styles.textoBotao}>
-              {accessToken ? "Desconectar do Spotify" : "Conectar com Spotify"}
-            </Text>
-          </TouchableOpacity>
-        )}
-      </View>
-    </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 
 export default ConfiguracoesScreen;
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16, backgroundColor: "#F5F5F5" },
-  titulo: { fontSize: 26, fontWeight: "bold", marginBottom: 20 },
+  container: {
+    flex: 1,
+    padding: 16,
+    backgroundColor: "#F5F5F5",
+  },
+  titulo: {
+    fontSize: 26,
+    fontWeight: "bold",
+    marginBottom: 20,
+    textAlign: "center",
+  },
   card: {
     backgroundColor: "#FFF",
     borderRadius: 12,
@@ -166,7 +230,11 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     elevation: 2,
   },
-  cardTitulo: { fontSize: 18, fontWeight: "bold", marginBottom: 12 },
+  cardTitulo: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 12,
+  },
   inputGroup: {
     flexDirection: "row",
     alignItems: "center",
@@ -175,24 +243,35 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingHorizontal: 10,
     marginBottom: 12,
+    backgroundColor: "#FAFAFA",
   },
-  icone: { marginRight: 10 },
-  input: { flex: 1, height: 45, fontSize: 16 },
+  icone: {
+    marginRight: 10,
+  },
+  input: {
+    flex: 1,
+    height: 45,
+    fontSize: 16,
+  },
   botaoSalvar: {
     backgroundColor: "#4A90E2",
-    paddingVertical: 10,
-    borderRadius: 8,
+    paddingVertical: 12,
+    borderRadius: 10,
     alignItems: "center",
     marginTop: 10,
   },
-  textoBotaoSalvar: { color: "#FFF", fontSize: 16, fontWeight: "bold" },
+  textoBotaoSalvar: {
+    color: "#FFF",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
   botaoSpotify: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "#1DB954",
-    paddingVertical: 10,
-    borderRadius: 8,
+    paddingVertical: 12,
+    borderRadius: 10,
   },
   botaoDesconectar: { backgroundColor: "#b02c1b" },
   textoBotao: {
@@ -203,7 +282,6 @@ const styles = StyleSheet.create({
   },
   mensagem: {
     marginTop: 10,
-    color: "#4A90E2",
     fontWeight: "bold",
     textAlign: "center",
   },
