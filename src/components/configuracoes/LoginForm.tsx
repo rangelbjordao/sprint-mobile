@@ -4,6 +4,7 @@ import { Controller, useForm } from "react-hook-form";
 import {
   ActivityIndicator,
   Alert,
+  Platform,
   StyleSheet,
   Text,
   TextInput,
@@ -27,6 +28,14 @@ type FormData = {
   email: string;
   password: string;
 };
+
+function mostrarAlerta(titulo: string, mensagem: string) {
+  if (Platform.OS === "web") {
+    window.alert(`${titulo}: ${mensagem}`);
+  } else {
+    Alert.alert(titulo, mensagem);
+  }
+}
 
 const LoginForm: React.FC<LoginFormProps> = ({
   isRegistering,
@@ -58,7 +67,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
     } catch (err: any) {
       const msg =
         err.response?.data?.mensagem || err.message || "Ocorreu um erro";
-      Alert.alert("Erro", msg);
+      mostrarAlerta("Erro", msg);
     }
   };
 

@@ -23,21 +23,29 @@ const ConfiguracoesScreen = () => {
     loading: spotifyLoading,
   } = useSpotifyAuth();
 
+  const mostrarAlerta = (titulo: string, mensagem: string) => {
+    if (Platform.OS === "web") {
+      window.alert(`${titulo}\n\n${mensagem}`);
+    } else {
+      Alert.alert(titulo, mensagem);
+    }
+  };
+
   const handleLogout = async () => {
     try {
       await logout();
-      Alert.alert("Sucesso", "Logout realizado com sucesso!");
+      mostrarAlerta("Sucesso", "Logout realizado com sucesso!");
     } catch (err) {
-      Alert.alert("Erro", "Falha ao realizar logout.");
+      mostrarAlerta("Erro", "Falha ao realizar logout.");
     }
   };
 
   const handleLogin = async (email: string, password: string) => {
-    const result = await login(email, password); // AuthResult
+    const result = await login(email, password);
     if (result.success) {
-      Alert.alert("Sucesso", "Login realizado com sucesso!");
+      mostrarAlerta("Sucesso", "Login realizado com sucesso!");
     } else {
-      Alert.alert("Erro", result.mensagem || "Erro ao logar");
+      mostrarAlerta("Erro", result.mensagem || "Erro ao logar");
     }
   };
 
@@ -46,12 +54,12 @@ const ConfiguracoesScreen = () => {
     email: string,
     password: string
   ) => {
-    const result = await registrar(username, email, password); 
+    const result = await registrar(username, email, password);
     if (result.success) {
-      Alert.alert("Sucesso", "Cadastro realizado! Faça login.");
+      mostrarAlerta("Sucesso", "Cadastro realizado! Faça login.");
       setIsRegistering(false);
     } else {
-      Alert.alert("Erro", result.mensagem || "Erro ao cadastrar");
+      mostrarAlerta("Erro", result.mensagem || "Erro ao cadastrar");
     }
   };
 
