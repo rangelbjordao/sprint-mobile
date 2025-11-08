@@ -1,6 +1,5 @@
 import BarraMedia from "@/components/analises/musicas/BarraMedia";
 import MusicaItem from "@/components/analises/musicas/MusicaItem";
-import { SpotifyService } from "@/services/spotifyService";
 import { Musica } from "@/types/spotify";
 import React, { useEffect, useState } from "react";
 import {
@@ -15,20 +14,46 @@ const AnaliseMusicasScreen = () => {
   const medias = { energy: 0.68, valence: 0.61, danceability: 0.75 };
   const [musicas, setMusicas] = useState<Musica[]>([]);
   const [carregando, setCarregando] = useState(true);
-  const [erro, setErro] = useState<string | null>(null);
+
+  const musicasMock: Musica[] = [
+    {
+      id: "1",
+      name: "Blinding Lights",
+      artists: "The Weeknd",
+      popularity: 92,
+    },
+    {
+      id: "2",
+      name: "As It Was",
+      artists: "Harry Styles",
+      popularity: 88,
+    },
+    {
+      id: "3",
+      name: "Dance Monkey",
+      artists: "Tones and I",
+      popularity: 90,
+    },
+    {
+      id: "4",
+      name: "Levitating",
+      artists: "Dua Lipa",
+      popularity: 86,
+    },
+    {
+      id: "5",
+      name: "Peaches",
+      artists: "Justin Bieber feat. Daniel Caesar, Giveon",
+      popularity: 85,
+    },
+  ];
 
   useEffect(() => {
-    const carregar = async () => {
-      try {
-        const tracks = await SpotifyService.buscarMusicasMaisOuvidas();
-        setMusicas(tracks);
-      } catch {
-        setErro("Erro ao carregar músicas");
-      } finally {
-        setCarregando(false);
-      }
-    };
-    carregar();
+    const timer = setTimeout(() => {
+      setMusicas(musicasMock);
+      setCarregando(false);
+    }, 1000);
+    return () => clearTimeout(timer);
   }, []);
 
   const barras = [
@@ -47,19 +72,6 @@ const AnaliseMusicasScreen = () => {
       >
         <ActivityIndicator size="large" color="#1DB954" />
         <Text style={{ marginTop: 10 }}>Carregando suas músicas...</Text>
-      </View>
-    );
-  }
-
-  if (erro) {
-    return (
-      <View
-        style={[
-          styles.container,
-          { alignItems: "center", justifyContent: "center" },
-        ]}
-      >
-        <Text>{erro}</Text>
       </View>
     );
   }

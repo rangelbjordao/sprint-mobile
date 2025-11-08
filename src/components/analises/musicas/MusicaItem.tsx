@@ -1,6 +1,7 @@
 import { Musica } from "@/types/spotify";
+import { FontAwesome5 } from "@expo/vector-icons";
 import React from "react";
-import { Image, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 
 interface MusicaItemProps {
   musica: Musica;
@@ -9,16 +10,13 @@ interface MusicaItemProps {
 const MusicaItem = ({ musica }: MusicaItemProps) => {
   return (
     <View style={styles.musicaItem}>
-      <Image
-        source={{ uri: musica.album.images[0]?.url }}
-        style={styles.albumImage}
-      />
+      <FontAwesome5 name="compact-disc" size={40} color="#000000" />
+
       <View style={styles.musicaInfo}>
         <Text style={styles.musicaTitle}>{musica.name}</Text>
-        <Text style={styles.musicaArtist}>
-          {musica.artists.map((a) => a.name).join(", ")}
-        </Text>
+        <Text style={styles.musicaArtist}>{musica.artists}</Text>
       </View>
+
       <View style={styles.musicaStats}>
         <Text style={styles.statLabel}>P: {musica.popularity}</Text>
       </View>
@@ -54,11 +52,5 @@ const styles = StyleSheet.create({
   },
   statLabel: {
     fontSize: 12,
-  },
-  albumImage: {
-    width: 50,
-    height: 50,
-    borderRadius: 5,
-    marginRight: 10,
   },
 });
