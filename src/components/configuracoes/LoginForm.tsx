@@ -1,5 +1,6 @@
 import { Feather } from "@expo/vector-icons";
-import React, { useState } from "react";
+import React from "react";
+import { Controller, useForm } from "react-hook-form";
 import {
   ActivityIndicator,
   Alert,
@@ -21,31 +22,39 @@ interface LoginFormProps {
   loading: boolean;
 }
 
+type FormData = {
+  username?: string;
+  email: string;
+  password: string;
+};
+
 const LoginForm: React.FC<LoginFormProps> = ({
   isRegistering,
   onLogin,
   onRegister,
   loading,
 }) => {
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<FormData>({
+    defaultValues: {
+      username: "",
+      email: "",
+      password: "",
+    },
+  });
 
-  const handleSubmit = async () => {
+  const onSubmit = async (data: FormData) => {
     try {
       if (isRegistering) {
-        if (!username || !email || !password) {
-          Alert.alert("Atenção", "Preencha todos os campos para cadastro");
-          return;
-        }
-        await onRegister(username, email, password);
+        await onRegister(data.username!, data.email, data.password);
       } else {
-        if (!email || !password) {
-          Alert.alert("Atenção", "Digite email e senha");
-          return;
-        }
-        await onLogin(email, password);
+        await onLogin(data.email, data.password);
       }
+      reset();
     } catch (err: any) {
       const msg =
         err.response?.data?.mensagem || err.message || "Ocorreu um erro";
@@ -56,40 +65,88 @@ const LoginForm: React.FC<LoginFormProps> = ({
   return (
     <View>
       {isRegistering && (
-        <View style={styles.inputGroup}>
-          <Feather name="user" size={20} color="#666" style={styles.icon} />
-          <TextInput
-            style={styles.input}
-            placeholder="Usuário"
-            value={username}
-            onChangeText={setUsername}
-          />
-        </View>
+        <>
+          <View style={styles.inputGroup}>
+            <Feather name="user" size={20} color="#666" style={styles.icon} />
+            <Controller
+              control={control}
+              name="username"
+              rules={{ required: "Usuário é obrigatório" }}
+              render={({ field: { onChange, value } }) => (
+                <TextInput
+                  style={styles.input}
+                  placeholder="Usuário"
+                  value={value}
+                  onChangeText={onChange}
+                />
+              )}
+            />
+          </View>
+          {errors.username && (
+            <Text style={styles.errorText}>{errors.username.message}</Text>
+          )}
+        </>
       )}
+
       <View style={styles.inputGroup}>
         <Feather name="mail" size={20} color="#666" style={styles.icon} />
-        <TextInput
-          style={styles.input}
-          placeholder="Email"
-          value={email}
-          onChangeText={setEmail}
-          keyboardType="email-address"
-          autoCapitalize="none"
+        <Controller
+          control={control}
+          name="email"
+          rules={{
+            required: "Email é obrigatório",
+            pattern: {
+              value: /^\S+@\S+\.\S+$/,
+              message: "Digite um email válido",
+            },
+          }}
+          render={({ field: { onChange, value } }) => (
+            <TextInput
+              style={styles.input}
+              placeholder="Email"
+              value={value}
+              onChangeText={onChange}
+              keyboardType="email-address"
+              autoCapitalize="none"
+            />
+          )}
         />
       </View>
+      {errors.email && (
+        <Text style={styles.errorText}>{errors.email.message}</Text>
+      )}
+
       <View style={styles.inputGroup}>
         <Feather name="lock" size={20} color="#666" style={styles.icon} />
-        <TextInput
-          style={styles.input}
-          placeholder="Senha"
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
+        <Controller
+          control={control}
+          name="password"
+          rules={{
+            required: "Senha é obrigatória",
+            minLength: {
+              value: 6,
+              message: "A senha deve ter pelo menos 6 caracteres",
+            },
+          }}
+          render={({ field: { onChange, value } }) => (
+            <TextInput
+              style={styles.input}
+              placeholder="Senha"
+              value={value}
+              onChangeText={onChange}
+              secureTextEntry
+            />
+          )}
         />
       </View>
+      {errors.password && (
+        <Text style={styles.errorText}>{errors.password.message}</Text>
+      )}
+
+      {/* Botão */}
       <TouchableOpacity
         style={styles.button}
-        onPress={handleSubmit}
+        onPress={handleSubmit(onSubmit)}
         disabled={loading}
       >
         {loading ? (
@@ -136,5 +193,11 @@ const styles = StyleSheet.create({
     color: "#FFF",
     fontSize: 16,
     fontWeight: "bold",
+  },
+  errorText: {
+    color: "red",
+    fontSize: 13,
+    marginBottom: 8,
+    marginLeft: 4,
   },
 });
