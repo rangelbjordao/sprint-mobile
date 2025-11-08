@@ -4,6 +4,8 @@ import api from "@/services/api";
 
 const TOKEN_KEY = "jwt_token";
 
+type AuthResult = { success: boolean; mensagem?: string };
+
 export const useAuth = () => {
   const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -29,17 +31,20 @@ export const useAuth = () => {
     loadToken();
   }, []);
 
-  const login = async (email: string, password: string) => {
+  const login = async (
+    email: string,
+    password: string
+  ): Promise<AuthResult> => {
     setLoading(true);
     setError(null);
     try {
       const response = await api.post("/auth", { email, password });
       const jwt = response.data?.tokenJWT;
-      if (!jwt) {
-        const msg = "Token JWT não recebido do backend";
-        setError(msg);
-        return { success: false, mensagem: msg };
-      }
+      if (!jwt)
+        return {
+          success: false,
+          mensagem: "Token JWT não recebido do backend",
+        };
 
       setToken(jwt);
       await AsyncStorage.setItem(TOKEN_KEY, jwt);
@@ -63,16 +68,12 @@ export const useAuth = () => {
     username: string,
     email: string,
     password: string
-  ) => {
+  ): Promise<AuthResult> => {
     setLoading(true);
     setError(null);
     try {
-      const response = await api.post("/auth/criar", {
-        username,
-        email,
-        password,
-      });
-      return { success: true, data: response.data };
+      await api.post("/auth/criar", { username, email, password });
+      return { success: true };
     } catch (err: any) {
       const msg =
         err.response?.data?.mensagem || err.message || "Erro ao cadastrar";
