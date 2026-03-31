@@ -1,26 +1,31 @@
+import { AuthProvider, useAuthContext } from "@/context/AuthContext";
 import { Stack } from "expo-router";
+import { ActivityIndicator, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-export default function RootLayout() {
+function RootNavigator() {
+  const { token } = useAuthContext();
+
+  if (token === undefined) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
+
   return (
-    <SafeAreaView
-      style={[
-        styles.safeArea,
-        {
-          backgroundColor: "#F5F5F5",
-        },
-      ]}
-      edges={["top"]}
-    >
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#F5F5F5" }} edges={["top"]}>
       <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       </Stack>
     </SafeAreaView>
   );
 }
 
-const styles = {
-  safeArea: {
-    flex: 1,
-  },
-};
+export default function RootLayout() {
+  return (
+    <AuthProvider>
+      <RootNavigator />
+    </AuthProvider>
+  );
+}

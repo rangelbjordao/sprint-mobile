@@ -1,11 +1,10 @@
 import Card from "@/components/configuracoes/Card";
-import LoginForm from "@/components/configuracoes/LoginForm";
 import SpotifyConnect from "@/components/configuracoes/spotifyConnect";
 import { useAuth } from "@/hooks/useAuth";
 import { useSpotifyAuth } from "@/hooks/useSpotifyAuth";
-import React, { useState } from "react";
+import { useRouter } from "expo-router";
+import React, { useEffect } from "react";
 import {
-  Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -15,53 +14,20 @@ import {
 } from "react-native";
 
 const ConfiguracoesScreen = () => {
-  const [isRegistering, setIsRegistering] = useState(false);
-  const { token, login, logout, registrar, loading } = useAuth();
+  const { logout, loading } = useAuth();
   const {
-    accessToken,
-    logout: logoutSpotify,
+    connected,
+    connect,
+    disconnect: disconnectSpotify,
+    checkConnected,
     loading: spotifyLoading,
   } = useSpotifyAuth();
 
-  const mostrarAlerta = (titulo: string, mensagem: string) => {
-    if (Platform.OS === "web") {
-      window.alert(`${titulo}\n\n${mensagem}`);
-    } else {
-      Alert.alert(titulo, mensagem);
-    }
-  };
+  useEffect(() => {
+    checkConnected();
+  }, []);
 
-  const handleLogout = async () => {
-    try {
-      await logout();
-      mostrarAlerta("Sucesso", "Logout realizado com sucesso!");
-    } catch (err) {
-      mostrarAlerta("Erro", "Falha ao realizar logout.");
-    }
-  };
-
-  const handleLogin = async (email: string, password: string) => {
-    const result = await login(email, password);
-    if (result.success) {
-      mostrarAlerta("Sucesso", "Login realizado com sucesso!");
-    } else {
-      mostrarAlerta("Erro", result.mensagem || "Erro ao logar");
-    }
-  };
-
-  const handleRegister = async (
-    username: string,
-    email: string,
-    password: string
-  ) => {
-    const result = await registrar(username, email, password);
-    if (result.success) {
-      mostrarAlerta("Sucesso", "Cadastro realizado! Faça login.");
-      setIsRegistering(false);
-    } else {
-      mostrarAlerta("Erro", result.mensagem || "Erro ao cadastrar");
-    }
-  };
+  const router = useRouter();
 
   return (
     <KeyboardAvoidingView
@@ -71,50 +37,28 @@ const ConfiguracoesScreen = () => {
       <ScrollView contentContainerStyle={styles.container}>
         <Text style={styles.title}>Configurações</Text>
 
-        {token ? (
-          <Card>
-            <Text style={styles.cardTitle}>Bem-vindo!</Text>
-            <TouchableOpacity
-              style={styles.button}
-              onPress={handleLogout}
-              disabled={loading}
-            >
-              <Text style={styles.buttonText}>Logout</Text>
-            </TouchableOpacity>
-          </Card>
-        ) : (
-          <Card>
-            <Text style={styles.cardTitle}>
-              {isRegistering ? "Cadastro" : "Login"}
-            </Text>
-            <LoginForm
-              isRegistering={isRegistering}
-              onLogin={handleLogin}
-              onRegister={handleRegister}
-              loading={loading}
-            />
-
-            <TouchableOpacity
-              onPress={() => setIsRegistering(!isRegistering)}
-              style={{ marginTop: 10 }}
-            >
-              <Text style={[styles.link, { textAlign: "center" }]}>
-                {isRegistering
-                  ? "Já tem conta? Faça login"
-                  : "Não tem conta? Cadastre-se"}
-              </Text>
-            </TouchableOpacity>
-          </Card>
-        )}
+        <Card>
+          <Text style={styles.cardTitle}>Spotify</Text>
+          <SpotifyConnect
+            connected={connected}
+            loading={spotifyLoading}
+            onConnect={connect}
+            onDisconnect={disconnectSpotify}
+          />
+        </Card>
 
         <Card>
-          <Text style={styles.cardTitle}>Conexões</Text>
-          <SpotifyConnect
-            accessToken={accessToken}
-            loading={spotifyLoading}
-            onConnect={() => console.log("Login Spotify")}
-            onDisconnect={logoutSpotify}
-          />
+          <Text style={styles.cardTitle}>Conta</Text>
+          <TouchableOpacity
+            style={styles.buttonLogout}
+            onPress={async () => {
+              await logout();
+              router.replace("/(auth)");
+            }}
+            disabled={loading}
+          >
+            <Text style={styles.buttonText}>Sair da conta</Text>
+          </TouchableOpacity>
         </Card>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -140,8 +84,8 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 12,
   },
-  button: {
-    backgroundColor: "#4A90E2",
+  buttonLogout: {
+    backgroundColor: "#E24A4A",
     paddingVertical: 12,
     borderRadius: 10,
     alignItems: "center",
@@ -150,10 +94,6 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "#FFF",
     fontSize: 16,
-    fontWeight: "bold",
-  },
-  link: {
-    color: "#4A90E2",
     fontWeight: "bold",
   },
 });

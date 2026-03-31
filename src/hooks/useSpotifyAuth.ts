@@ -1,51 +1,52 @@
 import { useState, useCallback } from "react";
-import { Platform } from "react-native";
 import * as WebBrowser from "expo-web-browser";
+import * as Linking from "expo-linking";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { SpotifyService } from "@/services/spotifyService";
 
+const SPOTIFY_CONNECTED_KEY = "spotify_connected";
+
 export function useSpotifyAuth() {
-  const [accessToken, setAccessToken] = useState<string | null>(null);
+  const [connected, setConnected] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const login = useCallback(async (tokenJwt: string) => {
+  const checkConnected = useCallback(async () => {
+    const val = await AsyncStorage.getItem(SPOTIFY_CONNECTED_KEY);
+    setConnected(val === "true");
+  }, []);
+
+  const connect = useCallback(async () => {
     setLoading(true);
     setError(null);
-
     try {
-      // Pega URL de login do backend
-      let urlLogin = await SpotifyService.obterUrlLoginSpotify(tokenJwt);
+      const urlLogin = await SpotifyService.obterUrlLoginSpotify();
 
-      // Corrige redirect_uri para IP da máquina (Expo Go)
-      urlLogin = urlLogin.replace("127.0.0.1", "192.168.15.58");
+      const result = await WebBrowser.openAuthSessionAsync(
+        urlLogin,
+        Linking.createURL("/spotify-callback"),
+      );
 
-      if (Platform.OS === "web") {
-        // Web: redireciona normalmente
-        window.location.href = urlLogin;
-      } else {
-        // Mobile (Expo Go / iOS / Android): abrir navegador interno
-        await WebBrowser.openBrowserAsync(urlLogin);
-
-        // Marca como conectado (placeholder)
-        setAccessToken("usuario-conectado");
+      if (
+        result.type === "success" ||
+        result.type === "dismiss" ||
+        result.type === "cancel"
+      ) {
+        await AsyncStorage.setItem(SPOTIFY_CONNECTED_KEY, "true");
+        setConnected(true);
       }
     } catch (err) {
       console.error("Erro ao conectar com Spotify:", err);
-      setError("Erro ao obter URL de login do Spotify");
+      setError("Erro ao conectar com o Spotify");
     } finally {
       setLoading(false);
     }
   }, []);
 
-  const logout = useCallback(() => {
-    setAccessToken(null);
+  const disconnect = useCallback(async () => {
+    await AsyncStorage.removeItem(SPOTIFY_CONNECTED_KEY);
+    setConnected(false);
   }, []);
 
-  return {
-    accessToken,
-    login,
-    logout,
-    loading,
-    error,
-  };
+  return { connected, connect, disconnect, checkConnected, loading, error };
 }

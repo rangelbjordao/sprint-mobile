@@ -9,22 +9,22 @@ import {
 } from "react-native";
 
 interface SpotifyConnectProps {
-  accessToken: string | null;
+  connected: boolean;
   loading: boolean;
   onConnect: () => void;
   onDisconnect: () => void;
 }
 
 const SpotifyConnect: React.FC<SpotifyConnectProps> = ({
-  accessToken,
+  connected,
   loading,
   onConnect,
   onDisconnect,
 }) => {
   const handlePress = () => {
-    if (accessToken) {
+    if (connected) {
       onDisconnect();
-      Alert.alert("Spotify", "Você saiu do Spotify.");
+      Alert.alert("Spotify", "Você desconectou o Spotify.");
     } else {
       onConnect();
     }
@@ -34,13 +34,13 @@ const SpotifyConnect: React.FC<SpotifyConnectProps> = ({
     <ActivityIndicator color="#1DB954" />
   ) : (
     <TouchableOpacity
-      style={[styles.button, accessToken ? styles.disconnect : {}]}
+      style={[styles.button, connected ? styles.disconnect : {}]}
       onPress={handlePress}
       disabled={loading}
     >
       <FontAwesome name="spotify" size={20} color="#FFF" />
       <Text style={styles.text}>
-        {accessToken ? "Desconectar do Spotify" : "Conectar com Spotify"}
+        {connected ? "Desconectar do Spotify" : "Conectar com Spotify"}
       </Text>
     </TouchableOpacity>
   );

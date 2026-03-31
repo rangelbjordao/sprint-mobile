@@ -1,7 +1,9 @@
 import { Feather } from "@expo/vector-icons";
-import { router, Tabs } from "expo-router";
+import { Tabs, useRouter } from "expo-router";
 
 export default function TabsLayout() {
+  const router = useRouter();
+
   return (
     <Tabs
       screenOptions={{
