@@ -29,7 +29,6 @@ export function useSpotifyAuth() {
     }
   }, []);
 
-  // 🔥 Atualiza automaticamente quando app volta do Spotify
   useEffect(() => {
     const subscription = AppState.addEventListener("change", (state) => {
       if (state === "active" && !loading) {
@@ -49,7 +48,6 @@ export function useSpotifyAuth() {
 
       await WebBrowser.openBrowserAsync(urlLogin);
 
-      // ⏳ espera o backend processar callback
       await new Promise((resolve) => setTimeout(resolve, 2000));
 
       await checkConnected();
@@ -69,7 +67,6 @@ export function useSpotifyAuth() {
 
       await AsyncStorage.removeItem(SPOTIFY_CONNECTED_KEY);
 
-      // 🔥 garante sincronização com backend
       await checkConnected();
     } catch (err) {
       console.error("Erro ao desconectar Spotify:", err);
