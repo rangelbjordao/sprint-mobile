@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from "react";
+import api from "@/services/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
 
 const TOKEN_KEY = "jwt_token";
 
@@ -17,25 +18,37 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [token, setTokenState] = useState<string | null | undefined>(undefined);
 
   useEffect(() => {
-    let mounted = true;
-
-    AsyncStorage.getItem(TOKEN_KEY).then((t) => {
-      if (mounted) setTokenState(t ?? null);
-    });
-
-    return () => {
-      mounted = false;
+    const validarToken = async () => {
+      const t = await AsyncStorage.getItem(TOKEN_KEY);
+      if (!t) {
+        setTokenState(null);
+        return;
+      }
+      try {
+        await api.get("/usuarios/humor-semanal", {
+          headers: { Authorization: `Bearer ${t}` },
+        });
+        setTokenState(t);
+      } catch (err: any) {
+        const status = err.response?.status;
+        if (status === 401 || status === 403) {
+          await AsyncStorage.removeItem(TOKEN_KEY);
+          setTokenState(null);
+        } else {
+          setTokenState(t);
+        }
+      }
     };
+    validarToken();
   }, []);
 
   const setToken = useCallback(async (newToken: string | null) => {
-    setTokenState(newToken);
-
     if (newToken) {
       await AsyncStorage.setItem(TOKEN_KEY, newToken);
     } else {
       await AsyncStorage.removeItem(TOKEN_KEY);
     }
+    setTokenState(newToken);
   }, []);
 
   return (

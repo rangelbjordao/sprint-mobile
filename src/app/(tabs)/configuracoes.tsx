@@ -2,7 +2,7 @@ import Card from "@/components/configuracoes/Card";
 import SpotifyConnect from "@/components/configuracoes/spotifyConnect";
 import { useAuth } from "@/hooks/useAuth";
 import { useSpotifyAuth } from "@/hooks/useSpotifyAuth";
-import { useRouter } from "expo-router";
+import { Redirect } from "expo-router";
 import React, { useEffect } from "react";
 import {
   KeyboardAvoidingView,
@@ -14,7 +14,7 @@ import {
 } from "react-native";
 
 const ConfiguracoesScreen = () => {
-  const { logout, loading } = useAuth();
+  const { logout, loading, token } = useAuth();
   const {
     connected,
     connect,
@@ -27,7 +27,9 @@ const ConfiguracoesScreen = () => {
     checkConnected();
   }, []);
 
-  const router = useRouter();
+  if (token === null) {
+    return <Redirect href="/login" />;
+  }
 
   return (
     <KeyboardAvoidingView
@@ -53,7 +55,6 @@ const ConfiguracoesScreen = () => {
             style={styles.buttonLogout}
             onPress={async () => {
               await logout();
-              router.replace("/(auth)");
             }}
             disabled={loading}
           >

@@ -1,5 +1,5 @@
 import { AuthProvider, useAuthContext } from "@/context/AuthContext";
-import { Stack } from "expo-router";
+import { Redirect, Slot } from "expo-router";
 import { ActivityIndicator, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -16,8 +16,7 @@ function RootNavigator() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#F5F5F5" }} edges={["top"]}>
-      <Stack screenOptions={{ headerShown: false }}>
-      </Stack>
+      <Slot />
     </SafeAreaView>
   );
 }

@@ -1,27 +1,29 @@
+import LoginForm from "@/components/login/LoginForm";
+import { useAuth } from "@/hooks/useAuth";
+import { Redirect } from "expo-router";
 import React, { useState } from "react";
 import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
+  Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  Alert,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
 } from "react-native";
-import { useRouter } from "expo-router";
-import { useAuth } from "@/hooks/useAuth";
-import LoginForm from "@/components/login/LoginForm";
 
-export default function AuthPage() {
+export default function LoginPage() {
   const [isRegistering, setIsRegistering] = useState(false);
-  const { login, registrar, loading } = useAuth();
-  const router = useRouter();
+  const { login, registrar, loading, token } = useAuth();
+
+  if (token) {
+    return <Redirect href="/(tabs)" />;
+  }
 
   const handleLogin = async (email: string, password: string) => {
     const result = await login(email, password);
-    if (result.success) {
-      router.replace("/(tabs)");
+    if (!result.success) {
+      Alert.alert("Erro", result.mensagem || "Erro ao logar");
     }
   };
 
@@ -30,9 +32,7 @@ export default function AuthPage() {
     email: string,
     password: string
   ) => {
-    console.log("Tentando cadastrar:", { username, email, password });
     const result = await registrar(username, email, password);
-    console.log("Resultado:", result);
     if (result.success) {
       setIsRegistering(false);
     } else {
@@ -76,32 +76,27 @@ export default function AuthPage() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F5F5F5",
+    backgroundColor: "#F5F5F5"
   },
   scroll: {
     flexGrow: 1,
     justifyContent: "center",
-    padding: 24,
+    padding: 24
   },
   titulo: {
     fontSize: 32,
-    fontWeight: "bold",
-    textAlign: "center",
-    marginBottom: 8,
-    color: "#1DB954",
+    fontWeight: "bold", textAlign: "center", marginBottom: 8, color: "#1DB954"
   },
   subtitulo: {
     fontSize: 16,
-    textAlign: "center",
-    color: "#666",
-    marginBottom: 32,
+    textAlign: "center", color: "#666", marginBottom: 32
   },
   toggleButton: {
     marginTop: 20,
-    alignItems: "center",
+    alignItems: "center"
   },
   toggleText: {
     color: "#4A90E2",
-    fontSize: 14,
+    fontSize: 14
   },
 });

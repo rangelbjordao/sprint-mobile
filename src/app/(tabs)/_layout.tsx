@@ -1,8 +1,14 @@
 import { Feather } from "@expo/vector-icons";
-import { Tabs, useRouter } from "expo-router";
+import { Redirect, Tabs, useRouter } from "expo-router";
+import { useAuthContext } from "@/context/AuthContext";
 
 export default function TabsLayout() {
+  const { token } = useAuthContext();
   const router = useRouter();
+
+  if (token === null) {
+    return <Redirect href="/login" />;
+  }
 
   return (
     <Tabs
