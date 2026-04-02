@@ -1,10 +1,7 @@
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const localIp = "192.168.15.58";
-const porta = 8080;
-
-export const API_BASE_URL = `http://${localIp}:${porta}`;
+export const API_BASE_URL = "https://emotiwavee.onrender.com";
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -22,7 +19,7 @@ api.interceptors.request.use(
     }
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error),
 );
 
 export default api;

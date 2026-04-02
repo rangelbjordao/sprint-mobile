@@ -1,18 +1,32 @@
 import api from "@/services/api";
 import { Musica } from "@/types/spotify";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const SpotifyService = {
   obterUrlLoginSpotify: async (): Promise<string> => {
     try {
+      const token = await AsyncStorage.getItem("jwt_token");
+
       const resposta = await api.get("/spotify/auth", {
-        headers: {},
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
 
-      const urlCorrigida = resposta.data.replace("127.0.0.1", "192.168.15.58");
-      return urlCorrigida;
+      return resposta.data;
     } catch (erro: any) {
       console.error("Erro ao obter URL de login do Spotify:", erro.message);
       throw new Error("Não foi possível obter a URL de login do Spotify.");
+    }
+  },
+
+  verificarConexao: async (): Promise<boolean> => {
+    try {
+      const resposta = await api.get("/spotify/status");
+      return resposta.data;
+    } catch (err) {
+      console.error("Erro ao verificar conexão:", err);
+      return false;
     }
   },
 
