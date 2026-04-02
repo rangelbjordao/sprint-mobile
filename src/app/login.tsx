@@ -23,7 +23,7 @@ export default function LoginPage() {
   const handleLogin = async (email: string, password: string) => {
     const result = await login(email, password);
     if (!result.success) {
-      Alert.alert("Erro", result.mensagem || "Erro ao logar");
+      Alert.alert("Erro ao entrar", result.mensagem || "Email ou senha incorretos");
     }
   };
 
@@ -34,9 +34,10 @@ export default function LoginPage() {
   ) => {
     const result = await registrar(username, email, password);
     if (result.success) {
+      Alert.alert("Sucesso", "Conta criada! Faça login.");
       setIsRegistering(false);
     } else {
-      Alert.alert("Erro", result.mensagem || "Erro ao cadastrar");
+      Alert.alert("Erro ao cadastrar", result.mensagem || "Erro ao criar conta");
     }
   };
 
