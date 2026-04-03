@@ -1,6 +1,6 @@
-export interface Musica {
+export type Musica = {
   id: string;
-  name: string;
-  artists: string;
-  popularity: number;
-}
+  titulo: string;
+  artista: string;
+  imagemUrl?: string | null;
+};

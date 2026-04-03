@@ -1,56 +1,65 @@
-import { Musica } from "@/types/spotify";
-import { FontAwesome5 } from "@expo/vector-icons";
+import { Feather } from "@expo/vector-icons";
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Image, StyleSheet, Text, View } from "react-native";
+import { Musica } from "@/types/spotify";
 
-interface MusicaItemProps {
+type Props = {
   musica: Musica;
-}
+};
 
-const MusicaItem = ({ musica }: MusicaItemProps) => {
+export default function MusicaItem({ musica }: Props) {
   return (
-    <View style={styles.musicaItem}>
-      <FontAwesome5 name="compact-disc" size={40} color="#000000" />
+    <View style={styles.container}>
+      {musica.imagemUrl ? (
+        <Image source={{ uri: musica.imagemUrl }} style={styles.image} />
+      ) : (
+        <View style={styles.placeholder}>
+          <Feather name="music" size={24} color="#37a820" />
+        </View>
+      )}
 
-      <View style={styles.musicaInfo}>
-        <Text style={styles.musicaTitle}>{musica.name}</Text>
-        <Text style={styles.musicaArtist}>{musica.artists}</Text>
-      </View>
-
-      <View style={styles.musicaStats}>
-        <Text style={styles.statLabel}>P: {musica.popularity}</Text>
+      <View style={styles.info}>
+        <Text style={styles.titulo}>{musica.titulo}</Text>
+        <Text style={styles.artista}>{musica.artista}</Text>
       </View>
     </View>
   );
-};
-
-export default MusicaItem;
+}
 
 const styles = StyleSheet.create({
-  musicaItem: {
+  container: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#FFF",
-    padding: 16,
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 12,
+    elevation: 2,
+  },
+  image: {
+    width: 56,
+    height: 56,
     borderRadius: 8,
-    marginBottom: 8,
+    marginRight: 12,
   },
-  musicaInfo: {
+  placeholder: {
+    width: 56,
+    height: 56,
+    borderRadius: 8,
+    marginRight: 12,
+    backgroundColor: "#EAEAEA",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  info: {
     flex: 1,
-    marginLeft: 16,
   },
-  musicaTitle: {
+  titulo: {
     fontSize: 16,
-    fontWeight: "bold",
+    fontWeight: "600",
   },
-  musicaArtist: {
-    fontSize: 14,
-    color: "#0077ff",
-  },
-  musicaStats: {
-    alignItems: "flex-end",
-  },
-  statLabel: {
-    fontSize: 12,
+  artista: {
+    marginTop: 4,
+    color: "#666",
   },
 });

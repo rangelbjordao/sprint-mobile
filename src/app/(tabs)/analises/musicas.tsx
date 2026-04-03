@@ -1,60 +1,26 @@
 import BarraMedia from "@/components/analises/musicas/BarraMedia";
 import MusicaItem from "@/components/analises/musicas/MusicaItem";
-import { Musica } from "@/types/spotify";
-import React, { useEffect, useState } from "react";
+import { useUserTopMusicas } from "@/hooks/useUserTopMusicas";
+import { useSpotifyAuth } from "@/hooks/useSpotifyAuth";
+import React from "react";
 import {
   ActivityIndicator,
   ScrollView,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from "react-native";
 
 const AnaliseMusicasScreen = () => {
-  const medias = { energy: 0.68, valence: 0.61, danceability: 0.75 };
-  const [musicas, setMusicas] = useState<Musica[]>([]);
-  const [carregando, setCarregando] = useState(true);
+  const { connected, connect, loading: spotifyLoading } = useSpotifyAuth();
+  const { musicas, loading, error, recarregar } = useUserTopMusicas(5);
 
-  const musicasMock: Musica[] = [
-    {
-      id: "1",
-      name: "Blinding Lights",
-      artists: "The Weeknd",
-      popularity: 92,
-    },
-    {
-      id: "2",
-      name: "As It Was",
-      artists: "Harry Styles",
-      popularity: 88,
-    },
-    {
-      id: "3",
-      name: "Dance Monkey",
-      artists: "Tones and I",
-      popularity: 90,
-    },
-    {
-      id: "4",
-      name: "Levitating",
-      artists: "Dua Lipa",
-      popularity: 86,
-    },
-    {
-      id: "5",
-      name: "Peaches",
-      artists: "Justin Bieber feat. Daniel Caesar, Giveon",
-      popularity: 85,
-    },
-  ];
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setMusicas(musicasMock);
-      setCarregando(false);
-    }, 1000);
-    return () => clearTimeout(timer);
-  }, []);
+  const medias = {
+    energy: 0.68,
+    valence: 0.61,
+    danceability: 0.75,
+  };
 
   const barras = [
     { label: "Energia", value: medias.energy, color: "#E97451" },
@@ -62,16 +28,45 @@ const AnaliseMusicasScreen = () => {
     { label: "Dançabilidade", value: medias.danceability, color: "#4A90E2" },
   ];
 
-  if (carregando) {
+  if (!connected) {
     return (
-      <View
-        style={[
-          styles.container,
-          { alignItems: "center", justifyContent: "center" },
-        ]}
-      >
+      <View style={[styles.container, styles.centered]}>
+        <Text style={styles.title}>Análise Musical</Text>
+        <Text style={styles.textoCentral}>
+          Conecte sua conta do Spotify para visualizar suas músicas mais ouvidas.
+        </Text>
+
+        <TouchableOpacity
+          style={styles.botao}
+          onPress={connect}
+          disabled={spotifyLoading}
+        >
+          <Text style={styles.botaoTexto}>
+            {spotifyLoading ? "Conectando..." : "Conectar Spotify"}
+          </Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+  if (loading) {
+    return (
+      <View style={[styles.container, styles.centered]}>
         <ActivityIndicator size="large" color="#1DB954" />
         <Text style={{ marginTop: 10 }}>Carregando suas músicas...</Text>
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={[styles.container, styles.centered]}>
+        <Text style={styles.title}>Análise Musical</Text>
+        <Text style={styles.textoErro}>{error}</Text>
+
+        <TouchableOpacity style={styles.botao} onPress={recarregar}>
+          <Text style={styles.botaoTexto}>Tentar novamente</Text>
+        </TouchableOpacity>
       </View>
     );
   }
@@ -94,9 +89,15 @@ const AnaliseMusicasScreen = () => {
 
       <Text style={styles.sectionTitle}>Músicas Mais Ouvidas</Text>
 
-      {musicas.map((musica) => (
-        <MusicaItem key={musica.id} musica={musica} />
-      ))}
+      {musicas.length === 0 ? (
+        <Text style={styles.textoVazio}>
+          Nenhuma música encontrada para este usuário.
+        </Text>
+      ) : (
+        musicas.map((musica) => (
+          <MusicaItem key={musica.id} musica={musica} />
+        ))
+      )}
     </ScrollView>
   );
 };
@@ -104,7 +105,11 @@ const AnaliseMusicasScreen = () => {
 export default AnaliseMusicasScreen;
 
 const styles = StyleSheet.create({
-  container: { padding: 16 },
+  container: { padding: 16, flexGrow: 1 },
+  centered: {
+    alignItems: "center",
+    justifyContent: "center",
+  },
   title: { fontSize: 28, fontWeight: "bold", marginBottom: 16 },
   card: {
     backgroundColor: "#fff",
@@ -120,4 +125,29 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   sectionTitle: { fontSize: 22, fontWeight: "bold", marginBottom: 12 },
+  textoCentral: {
+    textAlign: "center",
+    fontSize: 16,
+    marginBottom: 16,
+  },
+  textoErro: {
+    textAlign: "center",
+    color: "red",
+    marginBottom: 16,
+  },
+  textoVazio: {
+    textAlign: "center",
+    color: "#666",
+    marginTop: 8,
+  },
+  botao: {
+    backgroundColor: "#1DB954",
+    paddingVertical: 12,
+    paddingHorizontal: 18,
+    borderRadius: 8,
+  },
+  botaoTexto: {
+    color: "#fff",
+    fontWeight: "bold",
+  },
 });

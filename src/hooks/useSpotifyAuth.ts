@@ -23,11 +23,14 @@ export function useSpotifyAuth() {
         await AsyncStorage.removeItem(SPOTIFY_CONNECTED_KEY);
       }
     } catch {
-      // fallback local
       const val = await AsyncStorage.getItem(SPOTIFY_CONNECTED_KEY);
       setConnected(val === "true");
     }
   }, []);
+
+  useEffect(() => {
+    checkConnected();
+  }, [checkConnected]);
 
   useEffect(() => {
     const subscription = AppState.addEventListener("change", (state) => {
