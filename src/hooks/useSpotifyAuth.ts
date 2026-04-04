@@ -9,11 +9,13 @@ const SPOTIFY_CONNECTED_KEY = "spotify_connected";
 
 export function useSpotifyAuth() {
   const [connected, setConnected] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const checkConnected = useCallback(async () => {
     try {
+      setLoading(true);
+
       const conectado = await SpotifyService.verificarConexao();
       setConnected(conectado);
 
@@ -25,6 +27,8 @@ export function useSpotifyAuth() {
     } catch {
       const val = await AsyncStorage.getItem(SPOTIFY_CONNECTED_KEY);
       setConnected(val === "true");
+    } finally {
+      setLoading(false);
     }
   }, []);
 
