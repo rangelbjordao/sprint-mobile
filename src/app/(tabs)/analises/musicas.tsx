@@ -1,4 +1,3 @@
-import BarraMedia from "@/components/analises/musicas/BarraMedia";
 import MusicaItem from "@/components/analises/musicas/MusicaItem";
 import { useUserTopMusicas } from "@/hooks/useUserTopMusicas";
 import { useSpotifyAuth } from "@/hooks/useSpotifyAuth";
@@ -15,18 +14,6 @@ import {
 const AnaliseMusicasScreen = () => {
   const { connected, connect, loading: spotifyLoading } = useSpotifyAuth();
   const { musicas, loading, error, recarregar } = useUserTopMusicas(5);
-
-  const medias = {
-    energy: 0.68,
-    valence: 0.61,
-    danceability: 0.75,
-  };
-
-  const barras = [
-    { label: "Energia", value: medias.energy, color: "#E97451" },
-    { label: "Positividade", value: medias.valence, color: "#50C878" },
-    { label: "Dançabilidade", value: medias.danceability, color: "#4A90E2" },
-  ];
 
   if (!connected) {
     return (
@@ -75,18 +62,6 @@ const AnaliseMusicasScreen = () => {
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Análise Musical</Text>
 
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>Sua Vibe Musical Recente</Text>
-        {barras.map((barra) => (
-          <BarraMedia
-            key={barra.label}
-            label={barra.label}
-            value={barra.value}
-            color={barra.color}
-          />
-        ))}
-      </View>
-
       <Text style={styles.sectionTitle}>Músicas Mais Ouvidas</Text>
 
       {musicas.length === 0 ? (
@@ -111,19 +86,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   title: { fontSize: 28, fontWeight: "bold", marginBottom: 16 },
-  card: {
-    backgroundColor: "#fff",
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
-    elevation: 3,
-  },
-  cardTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 20,
-    textAlign: "center",
-  },
   sectionTitle: { fontSize: 22, fontWeight: "bold", marginBottom: 12 },
   textoCentral: {
     textAlign: "center",
