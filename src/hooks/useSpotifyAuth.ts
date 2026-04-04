@@ -54,14 +54,12 @@ export function useSpotifyAuth() {
       const urlLogin = await SpotifyService.obterUrlLoginSpotify();
 
       await WebBrowser.openBrowserAsync(urlLogin);
-
       await new Promise((resolve) => setTimeout(resolve, 2000));
 
       await checkConnected();
     } catch (err) {
       console.error("Erro ao conectar com Spotify:", err);
       setError("Erro ao conectar com o Spotify");
-    } finally {
       setLoading(false);
     }
   }, [checkConnected]);
@@ -69,19 +67,16 @@ export function useSpotifyAuth() {
   const disconnect = useCallback(async () => {
     try {
       setLoading(true);
-
       await api.delete("/spotify/disconnect");
-
       await AsyncStorage.removeItem(SPOTIFY_CONNECTED_KEY);
-
-      await checkConnected();
+      setConnected(false);
     } catch (err) {
       console.error("Erro ao desconectar Spotify:", err);
       setError("Erro ao desconectar do Spotify");
     } finally {
       setLoading(false);
     }
-  }, [checkConnected]);
+  }, []);
 
   return {
     connected,

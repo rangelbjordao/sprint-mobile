@@ -15,11 +15,11 @@ const AnaliseMusicasScreen = () => {
   const { connected, connect, loading: spotifyLoading } = useSpotifyAuth();
   const { musicas, loading, error, recarregar } = useUserTopMusicas(5);
 
-  if (spotifyLoading) {
+  if (spotifyLoading || loading) {
     return (
       <View style={[styles.container, styles.centered]}>
         <ActivityIndicator size="large" color="#1DB954" />
-        <Text style={{ marginTop: 10 }}>Verificando conexão com Spotify...</Text>
+        <Text style={{ marginTop: 10 }}>Carregando...</Text>
       </View>
     );
   }
@@ -37,17 +37,10 @@ const AnaliseMusicasScreen = () => {
           onPress={connect}
           disabled={spotifyLoading}
         >
-          <Text style={styles.botaoTexto}>Conectar Spotify</Text>
+          <Text style={styles.botaoTexto}>
+            {spotifyLoading ? "Conectando..." : "Conectar Spotify"}
+          </Text>
         </TouchableOpacity>
-      </View>
-    );
-  }
-
-  if (loading) {
-    return (
-      <View style={[styles.container, styles.centered]}>
-        <ActivityIndicator size="large" color="#1DB954" />
-        <Text style={{ marginTop: 10 }}>Carregando suas músicas...</Text>
       </View>
     );
   }
