@@ -1,11 +1,12 @@
 import CardNavegacao from "@/components/analises/CardNavegacao";
 import { Feather, FontAwesome5 } from "@expo/vector-icons";
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { COLORS } from "../../../constants/colors";
 
 const AnalisesScreen = () => {
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       {/* Header */}
       <Text style={styles.title}>Análises</Text>
       <Text style={styles.subtitle}>
@@ -32,7 +33,7 @@ const AnalisesScreen = () => {
         title="Diário de Humor"
         description="Acesse e adicione registros ao seu diário pessoal."
       />
-    </View>
+    </ScrollView>
   );
 };
 
@@ -41,14 +42,18 @@ export default AnalisesScreen;
 const styles = StyleSheet.create({
   container: {
     padding: 16,
+    flexGrow: 1,
+    backgroundColor: COLORS.background,
   },
   title: {
     fontSize: 28,
     fontWeight: "bold",
     marginBottom: 8,
+    color: COLORS.texto,
   },
   subtitle: {
     fontSize: 16,
     marginBottom: 16,
+    color: COLORS.texto,
   },
 });

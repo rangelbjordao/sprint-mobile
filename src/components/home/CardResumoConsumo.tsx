@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { Feather } from "@expo/vector-icons";
+import { COLORS } from "@/constants/colors";
 
 export default function CardResumoConsumo() {
   return (
@@ -46,11 +47,11 @@ export default function CardResumoConsumo() {
         </View>
 
         <View style={styles.containerMusicStat}>
-          <Text>
-            Energia Média: <Text style={styles.musicStat}>0.75</Text>
+          <Text style={styles.musicStat}>
+            Energia Média: 0.75
           </Text>
-          <Text>
-            Positividade: <Text style={styles.musicStat}>0.82</Text>
+          <Text style={styles.musicStat}>
+            Positividade: 0.82
           </Text>
         </View>
       </View>
@@ -59,14 +60,22 @@ export default function CardResumoConsumo() {
 }
 
 const styles = StyleSheet.create({
-  cardTitle: { fontSize: 22, fontWeight: "bold", marginBottom: 8 },
+  cardTitle: {
+    fontSize: 22,
+    fontWeight: "bold",
+    marginBottom: 8,
+    color: COLORS.texto,
+  },
   section: {
     marginTop: 16,
     borderTopWidth: 1,
     borderTopColor: "#EEE",
     paddingTop: 16,
   },
-  containerAnalise: { flexDirection: "row", paddingBottom: 10 },
+  containerAnalise: {
+    flexDirection: "row",
+    paddingBottom: 10,
+  },
   analiseTitle: {
     fontSize: 16,
     fontWeight: "600",
@@ -91,6 +100,7 @@ const styles = StyleSheet.create({
   },
   legendText: {
     fontSize: 12,
+    color: COLORS.texto,
   },
   legendDot: {
     width: 8,
@@ -105,5 +115,6 @@ const styles = StyleSheet.create({
   musicStat: {
     fontSize: 14,
     fontWeight: "bold",
+    color: COLORS.texto,
   },
 });

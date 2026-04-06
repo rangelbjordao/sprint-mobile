@@ -2,6 +2,7 @@ import { Feather } from "@expo/vector-icons";
 import React from "react";
 import { Image, StyleSheet, Text, View } from "react-native";
 import { Musica } from "@/types/spotify";
+import { COLORS } from "@/constants/colors";
 
 type Props = {
   musica: Musica;
@@ -57,6 +58,7 @@ const styles = StyleSheet.create({
   titulo: {
     fontSize: 16,
     fontWeight: "600",
+    color: COLORS.texto,
   },
   artista: {
     marginTop: 4,

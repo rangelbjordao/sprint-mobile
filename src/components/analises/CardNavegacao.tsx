@@ -2,6 +2,7 @@ import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { Link } from "expo-router";
+import { COLORS } from "@/constants/colors";
 
 interface CardNavegacaoProps {
   href: string;
@@ -51,10 +52,12 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontSize: 17,
     fontWeight: "bold",
+    color: COLORS.texto,
   },
   cardDescription: {
     fontSize: 14,
     marginTop: 4,
+    color: COLORS.texto,
   },
 });
 

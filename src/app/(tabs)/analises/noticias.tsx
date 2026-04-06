@@ -1,3 +1,4 @@
+import { COLORS } from "@/constants/colors";
 import React from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 
@@ -86,11 +87,14 @@ export default AnaliseNoticiasScreen;
 const styles = StyleSheet.create({
   container: {
     padding: 16,
+    flexGrow: 1,
+    backgroundColor: COLORS.background,
   },
   titulo: {
     fontSize: 28,
     fontWeight: "bold",
     marginBottom: 12,
+    color: COLORS.texto,
   },
   card: {
     backgroundColor: "#FFF",
@@ -102,6 +106,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     marginBottom: 10,
+    color: COLORS.texto,
   },
   barraAnalise: {
     flexDirection: "row",
@@ -131,6 +136,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     marginBottom: 8,
+    color: COLORS.texto,
   },
   noticiaItem: {
     flexDirection: "row",
@@ -148,6 +154,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "500",
     marginBottom: 4,
+    color: COLORS.texto,
   },
   noticiaFonte: {
     fontSize: 14,

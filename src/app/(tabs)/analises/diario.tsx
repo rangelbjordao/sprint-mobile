@@ -12,6 +12,7 @@ import {
   Alert,
 } from "react-native";
 import { useForm, Controller } from "react-hook-form";
+import { COLORS } from "@/constants/colors";
 
 type HumorIcone =
   | "emoticon-excited-outline"
@@ -267,12 +268,14 @@ export default DiarioHumorScreen;
 const styles = StyleSheet.create({
   container: {
     padding: 16,
-    backgroundColor: "#F5F5F5",
+    flexGrow: 1,
+    backgroundColor: COLORS.background,
   },
   title: {
     fontSize: 28,
     fontWeight: "bold",
     marginBottom: 8,
+    color: COLORS.texto,
   },
   card: {
     backgroundColor: "#fff",
@@ -286,6 +289,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 20,
     textAlign: "center",
+    color: COLORS.texto,
   },
   opcoesDeHumor: {
     flexDirection: "row",

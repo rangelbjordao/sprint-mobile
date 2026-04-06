@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { COLORS } from "../../../constants/colors";
 
 const AnaliseMusicasScreen = () => {
   const { connected, connect, loading: spotifyLoading } = useSpotifyAuth();
@@ -80,13 +81,27 @@ const AnaliseMusicasScreen = () => {
 export default AnaliseMusicasScreen;
 
 const styles = StyleSheet.create({
-  container: { padding: 16, flexGrow: 1 },
+  container: {
+    padding: 16,
+    flexGrow: 1,
+    backgroundColor: COLORS.background,
+  },
   centered: {
     alignItems: "center",
     justifyContent: "center",
   },
-  title: { fontSize: 28, fontWeight: "bold", marginBottom: 16 },
-  sectionTitle: { fontSize: 22, fontWeight: "bold", marginBottom: 12 },
+  title: {
+    fontSize: 28,
+    fontWeight: "bold",
+    marginBottom: 16,
+    color: COLORS.texto,
+  },
+  sectionTitle: {
+    fontSize: 22,
+    fontWeight: "bold",
+    marginBottom: 12,
+    color: COLORS.texto,
+  },
   textoCentral: {
     textAlign: "center",
     fontSize: 16,

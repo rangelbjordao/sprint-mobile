@@ -12,6 +12,7 @@ import {
   Text,
   TouchableOpacity,
 } from "react-native";
+import { COLORS } from "../../constants/colors";
 
 const ConfiguracoesScreen = () => {
   const { logout, loading, token } = useAuth();
@@ -36,7 +37,8 @@ const ConfiguracoesScreen = () => {
       style={{ flex: 1, backgroundColor: "#F5F5F5" }}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
-      <ScrollView contentContainerStyle={styles.container}>
+      <ScrollView
+        contentContainerStyle={styles.container}>
         <Text style={styles.title}>Configurações</Text>
 
         <Card>
@@ -72,18 +74,19 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     padding: 16,
-    backgroundColor: "#F5F5F5",
+    backgroundColor: COLORS.background,
   },
   title: {
     fontSize: 26,
     fontWeight: "bold",
     marginBottom: 20,
-    textAlign: "center",
+    color: COLORS.texto,
   },
   cardTitle: {
     fontSize: 20,
     fontWeight: "bold",
     marginBottom: 12,
+    color: COLORS.texto,
   },
   buttonLogout: {
     backgroundColor: "#E24A4A",

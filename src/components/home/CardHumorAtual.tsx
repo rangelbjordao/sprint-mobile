@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { Entypo } from "@expo/vector-icons";
+import { COLORS } from "@/constants/colors";
 
 export default function CardHumorAtual() {
   return (
@@ -22,6 +23,7 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: "bold",
     marginBottom: 8,
+    color: COLORS.texto,
   },
   containerHumor: {
     flexDirection: "row",
@@ -32,6 +34,10 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: "semibold",
     marginLeft: 12,
+    color: COLORS.texto,
   },
-  subtitle: { fontSize: 16 },
+  subtitle: {
+    fontSize: 16,
+    color: COLORS.texto,
+  },
 });

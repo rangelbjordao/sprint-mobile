@@ -4,6 +4,7 @@ import CardRecomendacao from "@/components/home/CardRecomendacao";
 import CardResumoConsumo from "@/components/home/CardResumoConsumo";
 import React from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { COLORS } from "../../constants/colors";
 
 const IndexScreen = () => {
   return (
@@ -39,15 +40,19 @@ export default IndexScreen;
 const styles = StyleSheet.create({
   container: {
     padding: 16,
+    flexGrow: 1,
+    backgroundColor: COLORS.background,
   },
   title: {
     fontSize: 28,
     fontWeight: "bold",
     marginBottom: 8,
+    color: COLORS.texto,
   },
   subtitle: {
     fontSize: 16,
     marginBottom: 16,
+    color: COLORS.texto,
   },
   card: {
     backgroundColor: "#FFFFFF",

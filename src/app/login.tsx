@@ -11,6 +11,7 @@ import {
   Text,
   TouchableOpacity,
 } from "react-native";
+import { COLORS } from "../constants/colors";
 
 export default function LoginPage() {
   const [isRegistering, setIsRegistering] = useState(false);
@@ -23,7 +24,10 @@ export default function LoginPage() {
   const handleLogin = async (email: string, password: string) => {
     const result = await login(email, password);
     if (!result.success) {
-      Alert.alert("Erro ao entrar", result.mensagem || "Email ou senha incorretos");
+      Alert.alert(
+        "Não foi possível entrar",
+        result.mensagem || "Verifique seu e-mail e senha e tente novamente."
+      );
     }
   };
 
@@ -46,10 +50,12 @@ export default function LoginPage() {
       style={styles.container}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
-      <ScrollView contentContainerStyle={styles.scroll}>
+      <ScrollView
+
+        contentContainerStyle={styles.scroll}>
         <Text style={styles.titulo}>EmotiWave</Text>
         <Text style={styles.subtitulo}>
-          {isRegistering ? "Crie sua conta" : "Bem-vindo de volta"}
+          {isRegistering ? "Crie sua conta" : "Bem-vindo"}
         </Text>
 
         <LoginForm
@@ -76,8 +82,8 @@ export default function LoginPage() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: "#F5F5F5"
+    flexGrow: 1,
+    backgroundColor: COLORS.background
   },
   scroll: {
     flexGrow: 1,
@@ -90,7 +96,9 @@ const styles = StyleSheet.create({
   },
   subtitulo: {
     fontSize: 16,
-    textAlign: "center", color: "#666", marginBottom: 32
+    textAlign: "center",
+    color: COLORS.texto,
+    marginBottom: 32
   },
   toggleButton: {
     marginTop: 20,

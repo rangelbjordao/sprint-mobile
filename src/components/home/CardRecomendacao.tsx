@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { Feather } from "@expo/vector-icons";
+import { COLORS } from "@/constants/colors";
 
 export default function CardRecomendacao() {
   return (
@@ -12,7 +13,7 @@ export default function CardRecomendacao() {
         color="#D0021B"
         style={{ marginBottom: 8 }}
       />
-      <Text>
+      <Text style={styles.subtitle}>
         Notamos um aumento no consumo de notícias negativas hoje. Que tal
         equilibrar com uma playlist mais calma?
       </Text>
@@ -24,7 +25,16 @@ export default function CardRecomendacao() {
 }
 
 const styles = StyleSheet.create({
-  cardTitle: { fontSize: 22, fontWeight: "bold", marginBottom: 8 },
+  cardTitle: {
+    fontSize: 22,
+    fontWeight: "bold",
+    marginBottom: 8,
+    color: COLORS.texto,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: COLORS.texto,
+  },
   button: {
     backgroundColor: "#4A90E2",
     paddingVertical: 12,
@@ -32,5 +42,9 @@ const styles = StyleSheet.create({
     marginTop: 16,
     alignItems: "center",
   },
-  buttonText: { color: "#FFFFFF", fontSize: 16, fontWeight: "bold" },
+  buttonText: {
+    color: "#FFFFFF",
+    fontSize: 16,
+    fontWeight: "bold"
+  },
 });

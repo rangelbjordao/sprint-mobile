@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { COLORS } from "@/constants/colors";
 
 export default function CardHumorSemana() {
   const humorSemana = [
@@ -58,14 +59,33 @@ export default function CardHumorSemana() {
 }
 
 const styles = StyleSheet.create({
-  cardTitle: { fontSize: 22, fontWeight: "bold", marginBottom: 8 },
+  cardTitle: {
+    fontSize: 22,
+    fontWeight: "bold",
+    marginBottom: 8,
+    color: COLORS.texto,
+  },
   containerSemana: {
     flexDirection: "row",
     justifyContent: "space-between",
     marginTop: 10,
   },
-  containerDiaSemana: { alignItems: "center", flex: 1 },
-  emoji: { fontSize: 32, marginBottom: 6 },
-  humorValor: { fontSize: 16, fontWeight: "bold", marginBottom: 4 },
-  diaLabel: { fontSize: 14 },
+  containerDiaSemana: {
+    alignItems: "center",
+    flex: 1,
+  },
+  emoji: {
+    fontSize: 32,
+    marginBottom: 6
+  },
+  humorValor: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginBottom: 4,
+    color: COLORS.texto,
+  },
+  diaLabel: {
+    fontSize: 14,
+    color: COLORS.texto,
+  },
 });
