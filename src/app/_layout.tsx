@@ -1,7 +1,10 @@
 import { AuthProvider, useAuthContext } from "@/context/AuthContext";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Redirect, Slot } from "expo-router";
 import { ActivityIndicator, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+
+const queryClient = new QueryClient();
 
 function RootNavigator() {
   const { token } = useAuthContext();
@@ -15,7 +18,7 @@ function RootNavigator() {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#F5F5F5" }} edges={["top"]}>
+    <SafeAreaView style={{ flex: 1 }} edges={["top"]}>
       <Slot />
     </SafeAreaView>
   );
@@ -23,8 +26,10 @@ function RootNavigator() {
 
 export default function RootLayout() {
   return (
-    <AuthProvider>
-      <RootNavigator />
-    </AuthProvider>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <RootNavigator />
+      </AuthProvider>
+    </QueryClientProvider>
   );
 }
