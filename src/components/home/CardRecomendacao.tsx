@@ -2,24 +2,93 @@ import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { COLORS } from "@/constants/colors";
+import { useDiario } from "@/hooks/useDiario";
+import { router } from "expo-router";
+
+type RecomendacaoConfig = {
+  icone: React.ComponentProps<typeof Feather>["name"];
+  cor: string;
+  mensagem: string;
+};
 
 export default function CardRecomendacao() {
+  const { registros, isLoading } = useDiario();
+
+  if (isLoading) {
+    return (
+      <View>
+        <Text style={styles.cardTitle}>Recomendação do Dia</Text>
+        <Text style={styles.subtitle}>Carregando recomendação...</Text>
+      </View>
+    );
+  }
+
+  const ultimo = registros[0];
+
+  if (!ultimo) {
+    return (
+      <View>
+        <Text style={styles.cardTitle}>Recomendação do Dia</Text>
+        <Text style={styles.subtitle}>
+          Registre seu humor no diário para receber recomendações personalizadas.
+        </Text>
+      </View>
+    );
+  }
+
+  const recomendacoes: Record<string, RecomendacaoConfig> = {
+    Empolgado: {
+      icone: "smile",
+      cor: "#2A9D8F",
+      mensagem:
+        "Seu humor está em alta. Aproveite esse momento para manter uma rotina equilibrada e continuar consumindo conteúdos que te fazem bem.",
+    },
+    Feliz: {
+      icone: "thumbs-up",
+      cor: "#4A90E2",
+      mensagem:
+        "Você parece estar em um momento positivo. Uma boa ideia é continuar com conteúdos leves e músicas que reforcem esse bem-estar.",
+    },
+    Neutro: {
+      icone: "coffee",
+      cor: "#F4A261",
+      mensagem:
+        "Seu humor está estável. Que tal fazer uma pequena pausa, respirar um pouco e equilibrar seu consumo digital com algo mais leve?",
+    },
+    Infeliz: {
+      icone: "moon",
+      cor: "#E76F51",
+      mensagem:
+        "Seu último registro sugere cansaço ou desânimo. Tente desacelerar e priorizar conteúdos mais tranquilos ao longo do dia.",
+    },
+    Triste: {
+      icone: "heart",
+      cor: "#D0021B",
+      mensagem:
+        "Seu humor parece mais sensível hoje. Talvez seja um bom momento para reduzir estímulos e buscar conteúdos mais acolhedores.",
+    },
+  };
+
+  const recomendacao =
+    recomendacoes[ultimo.humor] ?? {
+      icone: "info",
+      cor: "#4A90E2",
+      mensagem:
+        "Acompanhe seus registros no diário para entender melhor como seu consumo digital afeta seu bem-estar.",
+    };
+
   return (
     <View>
       <Text style={styles.cardTitle}>Recomendação do Dia</Text>
+
       <Feather
-        name="alert-circle"
+        name={recomendacao.icone}
         size={24}
-        color="#D0021B"
+        color={recomendacao.cor}
         style={{ marginBottom: 8 }}
       />
-      <Text style={styles.subtitle}>
-        Notamos um aumento no consumo de notícias negativas hoje. Que tal
-        equilibrar com uma playlist mais calma?
-      </Text>
-      <TouchableOpacity style={styles.button}>
-        <Text style={styles.buttonText}>Ver Playlist Relaxante</Text>
-      </TouchableOpacity>
+
+      <Text style={styles.subtitle}>{recomendacao.mensagem}</Text>
     </View>
   );
 }
@@ -45,6 +114,6 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "#FFFFFF",
     fontSize: 16,
-    fontWeight: "bold"
+    fontWeight: "bold",
   },
 });
