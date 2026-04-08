@@ -3,7 +3,7 @@ import SpotifyConnect from "@/components/configuracoes/spotifyConnect";
 import { useAuth } from "@/hooks/useAuth";
 import { useSpotifyAuth } from "@/hooks/useSpotifyAuth";
 import { Redirect } from "expo-router";
-import React, { useEffect } from "react";
+import React from "react";
 import {
   KeyboardAvoidingView,
   Platform,
@@ -20,13 +20,8 @@ const ConfiguracoesScreen = () => {
     connected,
     connect,
     disconnect: disconnectSpotify,
-    checkConnected,
     loading: spotifyLoading,
   } = useSpotifyAuth();
-
-  useEffect(() => {
-    checkConnected();
-  }, []);
 
   if (token === null) {
     return <Redirect href="/login" />;
