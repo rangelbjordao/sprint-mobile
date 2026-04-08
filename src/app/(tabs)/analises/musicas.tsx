@@ -50,7 +50,9 @@ const AnaliseMusicasScreen = () => {
     return (
       <View style={[styles.container, styles.centered]}>
         <Text style={styles.title}>Análise Musical</Text>
-        <Text style={styles.textoErro}>{error}</Text>
+        <Text style={styles.textoErro}>
+          {error instanceof Error ? error.message : "Erro ao carregar músicas."}
+        </Text>
 
         <TouchableOpacity style={styles.botao} onPress={recarregar}>
           <Text style={styles.botaoTexto}>Tentar novamente</Text>
