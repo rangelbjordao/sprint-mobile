@@ -87,7 +87,18 @@ export default function DiarioHumorScreen() {
   const confirmarDelecao = (id: number) => {
     Alert.alert("Confirmar", "Deseja deletar este registro?", [
       { text: "Cancelar", style: "cancel" },
-      { text: "Deletar", style: "destructive", onPress: () => deletar(id) },
+      {
+        text: "Deletar",
+        style: "destructive",
+        onPress: async () => {
+          try {
+            await deletar(id);
+            Alert.alert("Sucesso", "Registro deletado!");
+          } catch {
+            Alert.alert("Erro", "Não foi possível deletar o registro.");
+          }
+        },
+      },
     ]);
   };
 
