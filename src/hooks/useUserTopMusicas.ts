@@ -12,6 +12,6 @@ export function useUserTopMusicas(limit = 5) {
     musicas: query.data ?? [],
     loading: query.isLoading,
     error: query.error,
-    recarregar: query.refetch,
+    recarregar: () => query.refetch(),
   };
 }
