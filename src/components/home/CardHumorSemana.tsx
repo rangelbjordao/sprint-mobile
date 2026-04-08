@@ -2,17 +2,20 @@ import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { COLORS } from "@/constants/colors";
+import { useDiario } from "@/hooks/useDiario";
+
+const mapaHumorValor: Record<string, number> = {
+  Empolgado: 90,
+  Feliz: 75,
+  Neutro: 55,
+  Infeliz: 35,
+  Triste: 15,
+};
+
+const diasSemana = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
 
 export default function CardHumorSemana() {
-  const humorSemana = [
-    { dia: "S", valor: 85 },
-    { dia: "T", valor: 70 },
-    { dia: "Q", valor: 55 },
-    { dia: "Q", valor: 30 },
-    { dia: "S", valor: 90 },
-    { dia: "S", valor: 60 },
-    { dia: "D", valor: 40 },
-  ];
+  const { registros, isLoading } = useDiario();
 
   const getEmoji = (valor: number) => {
     if (valor <= 30) {
@@ -24,6 +27,7 @@ export default function CardHumorSemana() {
         />
       );
     }
+
     if (valor <= 70) {
       return (
         <MaterialCommunityIcons
@@ -33,6 +37,7 @@ export default function CardHumorSemana() {
         />
       );
     }
+
     return (
       <MaterialCommunityIcons
         name="emoticon-happy-outline"
@@ -42,14 +47,89 @@ export default function CardHumorSemana() {
     );
   };
 
+  const agora = new Date();
+
+  const inicioPeriodo = new Date(agora);
+  inicioPeriodo.setDate(agora.getDate() - 6);
+  inicioPeriodo.setHours(0, 0, 0, 0);
+
+  const fimDeHoje = new Date(agora);
+  fimDeHoje.setHours(23, 59, 59, 999);
+
+  const registrosUltimos7Dias = registros.filter((registro) => {
+    const criadoEm = new Date(registro.criadoEm);
+    return criadoEm >= inicioPeriodo && criadoEm <= fimDeHoje;
+  });
+
+  const humorSemana = diasSemana.map((nomeDia, diaIndex) => {
+    const registrosDoDia = registrosUltimos7Dias.filter((registro) => {
+      const criadoEm = new Date(registro.criadoEm);
+      return criadoEm.getDay() === diaIndex;
+    });
+
+    const valoresDoDia = registrosDoDia.map(
+      (registro) => mapaHumorValor[registro.humor] ?? 55
+    );
+
+    const valor =
+      valoresDoDia.length > 0
+        ? Math.round(
+          valoresDoDia.reduce((total, atual) => total + atual, 0) /
+          valoresDoDia.length
+        )
+        : 0;
+
+    return {
+      dia: nomeDia,
+      valor,
+    };
+  });
+
+  if (isLoading) {
+    return (
+      <View>
+        <Text style={styles.cardTitle}>Evolução do Humor na Semana</Text>
+        <Text style={styles.textoAuxiliar}>Carregando dados da semana...</Text>
+      </View>
+    );
+  }
+
+  const semDados = humorSemana.every((item) => item.valor === 0);
+
+  if (semDados) {
+    return (
+      <View>
+        <Text style={styles.cardTitle}>Evolução do Humor na Semana</Text>
+        <Text style={styles.textoAuxiliar}>
+          Ainda não há registros suficientes para mostrar sua semana.
+        </Text>
+      </View>
+    );
+  }
+
   return (
     <View>
       <Text style={styles.cardTitle}>Evolução do Humor na Semana</Text>
       <View style={styles.containerSemana}>
         {humorSemana.map((item, i) => (
           <View key={i} style={styles.containerDiaSemana}>
-            <Text style={styles.emoji}>{getEmoji(item.valor)}</Text>
-            <Text style={styles.humorValor}>{item.valor}</Text>
+            {item.valor > 0 ? (
+              <>
+                <View style={styles.emoji}>{getEmoji(item.valor)}</View>
+                <Text style={styles.humorValor}>{item.valor}</Text>
+              </>
+            ) : (
+              <>
+                <View style={styles.emoji}>
+                  <MaterialCommunityIcons
+                    name="minus-circle-outline"
+                    size={28}
+                    color="#BDBDBD"
+                  />
+                </View>
+                <Text style={styles.humorValorVazio}>--</Text>
+              </>
+            )}
             <Text style={styles.diaLabel}>{item.dia}</Text>
           </View>
         ))}
@@ -75,8 +155,10 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   emoji: {
-    fontSize: 32,
-    marginBottom: 6
+    minHeight: 38,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 6,
   },
   humorValor: {
     fontSize: 16,
@@ -84,8 +166,18 @@ const styles = StyleSheet.create({
     marginBottom: 4,
     color: COLORS.texto,
   },
+  humorValorVazio: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginBottom: 4,
+    color: "#BDBDBD",
+  },
   diaLabel: {
     fontSize: 14,
+    color: COLORS.texto,
+  },
+  textoAuxiliar: {
+    fontSize: 16,
     color: COLORS.texto,
   },
 });
