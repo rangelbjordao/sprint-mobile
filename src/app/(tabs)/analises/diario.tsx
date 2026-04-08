@@ -217,7 +217,14 @@ export default function DiarioHumorScreen() {
                       <MaterialCommunityIcons name={humorItem.icone} size={24} color="#4A90E2" />
                     )}
                     <Text style={styles.dataHistorico}>
-                      {new Date(registro.criadoEm).toLocaleString("pt-BR")}
+                      {new Date(registro.criadoEm).toLocaleString("pt-BR", {
+                        timeZone: "America/Sao_Paulo",
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
                     </Text>
                   </View>
                   <View style={{ flexDirection: "row", gap: 8 }}>
