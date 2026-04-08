@@ -5,7 +5,7 @@ export function useUserTopMusicas(limit = 5) {
   const query = useQuery<MusicaUsuario[]>({
     queryKey: ["top-musicas", limit],
     queryFn: () => UserMusicService.buscarTopMusicasSpotify(limit),
-    staleTime: 1000 * 60 * 5, // cache de 5 minutos
+    staleTime: 1000 * 60 * 5,
   });
 
   return {
