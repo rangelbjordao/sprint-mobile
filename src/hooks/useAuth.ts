@@ -1,12 +1,11 @@
 import { useAuthContext } from "@/context/AuthContext";
-import { useState } from "react";
 import api from "@/services/api";
-import { router } from "expo-router";
+import { useState } from "react";
 
 type AuthResult = { success: boolean; mensagem?: string };
 
 export const useAuth = () => {
-  const { token, setToken } = useAuthContext();
+  const { token, setToken, setNome } = useAuthContext();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -18,9 +17,23 @@ export const useAuth = () => {
     setError(null);
     try {
       const response = await api.post("/auth", { email, password });
+      console.log("LOGIN RESPONSE:", response.data);
+
       const jwt = response.data?.tokenJWT;
-      if (!jwt) return { success: false, mensagem: "Token JWT não recebido" };
+      const nomeUsuario =
+        response.data?.username ||
+        response.data?.nome ||
+        response.data?.name ||
+        email.split("@")[0] ||
+        null;
+
+      if (!jwt) {
+        return { success: false, mensagem: "Token JWT não recebido" };
+      }
+
       await setToken(jwt);
+      await setNome(nomeUsuario);
+
       return { success: true };
     } catch (err: any) {
       const msg =
@@ -34,6 +47,7 @@ export const useAuth = () => {
 
   const logout = async () => {
     await setToken(null);
+    await setNome(null);
   };
 
   const registrar = async (

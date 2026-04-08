@@ -5,12 +5,18 @@ import CardResumoConsumo from "@/components/home/CardResumoConsumo";
 import React from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { COLORS } from "../../constants/colors";
+import { useAuthContext } from "@/context/AuthContext";
 
 const IndexScreen = () => {
+  const { nome } = useAuthContext();
+  const primeiroNome = nome?.trim().split(" ")[0] || "Usuário";
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       {/* Header */}
-      <Text style={styles.title}>Olá, Usuário!</Text>
+      <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">
+        Olá, {primeiroNome}!
+      </Text>
       <Text style={styles.subtitle}>
         Veja como seu bem-estar digital está hoje.
       </Text>
