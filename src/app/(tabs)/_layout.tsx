@@ -20,9 +20,9 @@ export default function TabsLayout() {
       screenListeners={{
         tabPress: (e) => {
           const tabName = e.target?.toString();
-          if (tabName?.includes("analises")) {
+          if (tabName?.includes("registros")) {
             e.preventDefault();
-            router.replace("/(tabs)/analises");
+            router.replace("/(tabs)/registros");
           }
         },
       }}
@@ -38,10 +38,10 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
-        name="analises"
+        name="registros"
         options={{
-          title: "Análises",
-          tabBarLabel: "Análises",
+          title: "Registros",
+          tabBarLabel: "Registros",
           tabBarIcon: ({ color, size }) => (
             <Feather name="bar-chart-2" color={color} size={size} />
           ),

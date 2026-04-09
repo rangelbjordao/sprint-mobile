@@ -15,25 +15,13 @@ const mapaIcone: Record<string, any> = {
 
 export default function CardRelatorioApex() {
   const { usuario } = useUsuarioMe();
-  const { relatorio, loadingRelatorio, errorRelatorio } =
-    useRelatorioSemanal(usuario?.id ?? null);
+  const { relatorio, loadingRelatorio } = useRelatorioSemanal();
 
   if (loadingRelatorio) {
     return (
       <View>
         <Text style={styles.titulo}>Relatório Semanal</Text>
         <ActivityIndicator color="#4A90E2" />
-      </View>
-    );
-  }
-
-  if (errorRelatorio) {
-    return (
-      <View>
-        <Text style={styles.titulo}>Relatório Semanal</Text>
-        <Text style={styles.textoAuxiliar}>
-          Não foi possível conectar ao serviço do relatório.
-        </Text>
       </View>
     );
   }

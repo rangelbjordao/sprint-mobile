@@ -1,12 +1,11 @@
 import CardHumorAtual from "@/components/home/CardHumorAtual";
 import CardHumorSemana from "@/components/home/CardHumorSemana";
 import CardRecomendacao from "@/components/home/CardRecomendacao";
-import CardResumoConsumo from "@/components/home/CardResumoConsumo";
+import CardRelatorioApex from "@/components/home/CardRelatorioApex";
+import { useAuthContext } from "@/context/AuthContext";
 import React, { useEffect } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { COLORS } from "../../constants/colors";
-import { useAuthContext } from "@/context/AuthContext";
-import CardRelatorioApex from "@/components/home/CardRelatorioApex";
 
 const IndexScreen = () => {
   const { nome } = useAuthContext();
@@ -48,10 +47,6 @@ const IndexScreen = () => {
 
       <View style={styles.card}>
         <CardHumorAtual />
-      </View>
-
-      <View style={styles.card}>
-        <CardResumoConsumo />
       </View>
 
       <View style={styles.card}>

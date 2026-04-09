@@ -1,5 +1,9 @@
+import { COLORS } from "@/constants/colors";
+import { useDiario } from "@/hooks/useDiario";
+import { RegistroHumorRequest } from "@/services/diarioService";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import React, { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 import {
   ActivityIndicator,
   Alert,
@@ -11,13 +15,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { useForm, Controller } from "react-hook-form";
-import { RegistroHumorRequest } from "@/services/diarioService";
-import { useDiario } from "@/hooks/useDiario";
-import { COLORS } from "@/constants/colors";
-import { useUsuarioMe } from "@/hooks/useUsuarioMe";
-import ApexService from "@/services/apexService";
-import { useRelatorioSemanal } from "@/hooks/useRelatorioSemanal";
 
 type HumorIcone =
   | "emoticon-excited-outline"
@@ -45,15 +42,25 @@ type FormData = {
 };
 
 export default function DiarioHumorScreen() {
-  const { registros, isLoading, criar, atualizar, deletar, criando } = useDiario();
+  const {
+    registros,
+    isLoading,
+    criar,
+    atualizar,
+    deletar,
+    criando,
+    atualizando,
+  } = useDiario();
+
+  const salvandoOuAtualizando = criando || atualizando;
+
   const [editandoId, setEditandoId] = useState<number | null>(null);
-  const { usuario } = useUsuarioMe();
-  const { enviarRegistro } = useRelatorioSemanal(usuario?.id ?? null);
 
   const { control, handleSubmit, reset, clearErrors, setValue, formState: { errors } } =
     useForm<FormData>({
       defaultValues: { humor: "", atividades: [], detalhes: "" },
     });
+
 
   const onSubmit = async (data: FormData) => {
     const dto: RegistroHumorRequest = {
@@ -67,25 +74,12 @@ export default function DiarioHumorScreen() {
         await atualizar({ id: editandoId, dto });
         Alert.alert("Sucesso", "Registro atualizado!");
         setEditandoId(null);
+        reset({ humor: "", atividades: [], detalhes: "" });
       } else {
         await criar(dto);
-
-        // APEX
-        if (usuario?.id) {
-          try {
-            await enviarRegistro({
-              usuario_id: usuario.id,
-              humor: data.humor,
-              detalhes: data.detalhes,
-            });
-          } catch (e) {
-            console.log("Erro ao enviar para APEX:", e);
-          }
-        }
-
         Alert.alert("Sucesso", "Registro salvo!");
+        reset({ humor: "", atividades: [], detalhes: "" });
       }
-      reset({ humor: "", atividades: [], detalhes: "" });
     } catch {
       Alert.alert("Erro", "Não foi possível salvar o registro.");
     }
@@ -112,7 +106,6 @@ export default function DiarioHumorScreen() {
         onPress: async () => {
           try {
             await deletar(id);
-            Alert.alert("Sucesso", "Registro deletado!");
           } catch {
             Alert.alert("Erro", "Não foi possível deletar o registro.");
           }
@@ -206,12 +199,20 @@ export default function DiarioHumorScreen() {
         />
 
         <Button
-          title={criando ? "Salvando..." : editandoId ? "Atualizar Registro" : "Salvar Registro"}
+          title={
+            editandoId
+              ? atualizando
+                ? "Atualizando..."
+                : "Atualizar Registro"
+              : criando
+                ? "Salvando..."
+                : "Salvar Registro"
+          }
           onPress={handleSubmit(onSubmit)}
           color="#4A90E2"
-          disabled={criando}
+          disabled={salvandoOuAtualizando}
         />
-        {editandoId && (
+        {editandoId && !salvandoOuAtualizando && (
           <TouchableOpacity onPress={cancelarEdicao} style={styles.botaoCancelar}>
             <Text style={styles.botaoCancelarTexto}>Cancelar edição</Text>
           </TouchableOpacity>

@@ -1,4 +1,4 @@
-import MusicaItem from "@/components/analises/musicas/MusicaItem";
+import MusicaItem from "@/components/registros/musicas/MusicaItem";
 import { useUserTopMusicas } from "@/hooks/useUserTopMusicas";
 import { useSpotifyAuth } from "@/hooks/useSpotifyAuth";
 import React from "react";
@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import { COLORS } from "../../../constants/colors";
 
-const AnaliseMusicasScreen = () => {
+const RegistroMusicasScreen = () => {
   const { connected, connect, loading: spotifyLoading } = useSpotifyAuth();
   const { musicas, loading, error, recarregar } = useUserTopMusicas(5);
 
@@ -80,7 +80,7 @@ const AnaliseMusicasScreen = () => {
   );
 };
 
-export default AnaliseMusicasScreen;
+export default RegistroMusicasScreen;
 
 const styles = StyleSheet.create({
   container: {
