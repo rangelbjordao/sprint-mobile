@@ -1,9 +1,11 @@
 import { Feather } from "@expo/vector-icons";
 import { Redirect, Tabs, useRouter } from "expo-router";
 import { useAuthContext } from "@/context/AuthContext";
+import { useTheme } from "@/context/ThemeContext";
 
 export default function TabsLayout() {
   const { token } = useAuthContext();
+  const { colors } = useTheme();
   const router = useRouter();
 
   if (token === null) {
@@ -13,8 +15,9 @@ export default function TabsLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: "#007bff",
-        tabBarInactiveTintColor: "#999",
+        tabBarActiveTintColor: colors.primary,
+        tabBarInactiveTintColor: colors.textoSecundario,
+        tabBarStyle: { backgroundColor: colors.tabBar },
         headerShown: false,
       }}
       screenListeners={{
@@ -32,9 +35,7 @@ export default function TabsLayout() {
         options={{
           title: "Início",
           tabBarLabel: "Início",
-          tabBarIcon: ({ color, size }) => (
-            <Feather name="home" color={color} size={size} />
-          ),
+          tabBarIcon: ({ color, size }) => <Feather name="home" color={color} size={size} />,
         }}
       />
       <Tabs.Screen
@@ -42,9 +43,7 @@ export default function TabsLayout() {
         options={{
           title: "Registros",
           tabBarLabel: "Registros",
-          tabBarIcon: ({ color, size }) => (
-            <Feather name="bar-chart-2" color={color} size={size} />
-          ),
+          tabBarIcon: ({ color, size }) => <Feather name="bar-chart-2" color={color} size={size} />,
         }}
       />
       <Tabs.Screen
@@ -52,9 +51,7 @@ export default function TabsLayout() {
         options={{
           title: "Configurações",
           tabBarLabel: "Configurações",
-          tabBarIcon: ({ color, size }) => (
-            <Feather name="settings" color={color} size={size} />
-          ),
+          tabBarIcon: ({ color, size }) => <Feather name="settings" color={color} size={size} />,
         }}
       />
     </Tabs>
