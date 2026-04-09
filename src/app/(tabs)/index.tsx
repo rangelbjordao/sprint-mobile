@@ -2,18 +2,43 @@ import CardHumorAtual from "@/components/home/CardHumorAtual";
 import CardHumorSemana from "@/components/home/CardHumorSemana";
 import CardRecomendacao from "@/components/home/CardRecomendacao";
 import CardResumoConsumo from "@/components/home/CardResumoConsumo";
-import React from "react";
+import React, { useEffect } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { COLORS } from "../../constants/colors";
 import { useAuthContext } from "@/context/AuthContext";
+import CardRelatorioApex from "@/components/home/CardRelatorioApex";
 
 const IndexScreen = () => {
   const { nome } = useAuthContext();
   const primeiroNome = nome?.trim().split(" ")[0] || "Usuário";
 
+  console.log("HOME INDEX RENDERIZOU");
+
+  useEffect(() => {
+    console.log("HOME INDEX useEffect RODOU");
+
+    async function testarApexSimples() {
+      try {
+        console.log("TESTE APEX INICIOU");
+
+        const response = await fetch(
+          "https://oracleapex.com/ords/wksp_emotiwave/humor/registros"
+        );
+
+        const text = await response.text();
+
+        console.log("TESTE APEX STATUS:", response.status);
+        console.log("TESTE APEX BODY:", text);
+      } catch (error: any) {
+        console.log("TESTE APEX ERRO:", error?.message);
+      }
+    }
+
+    testarApexSimples();
+  }, []);
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {/* Header */}
       <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">
         Olá, {primeiroNome}!
       </Text>
@@ -21,7 +46,6 @@ const IndexScreen = () => {
         Veja como seu bem-estar digital está hoje.
       </Text>
 
-      {/* Cards */}
       <View style={styles.card}>
         <CardHumorAtual />
       </View>
@@ -36,6 +60,10 @@ const IndexScreen = () => {
 
       <View style={styles.card}>
         <CardHumorSemana />
+      </View>
+
+      <View style={styles.card}>
+        <CardRelatorioApex />
       </View>
     </ScrollView>
   );

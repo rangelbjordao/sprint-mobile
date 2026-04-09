@@ -15,6 +15,9 @@ import { useForm, Controller } from "react-hook-form";
 import { RegistroHumorRequest } from "@/services/diarioService";
 import { useDiario } from "@/hooks/useDiario";
 import { COLORS } from "@/constants/colors";
+import { useUsuarioMe } from "@/hooks/useUsuarioMe";
+import ApexService from "@/services/apexService";
+import { useRelatorioSemanal } from "@/hooks/useRelatorioSemanal";
 
 type HumorIcone =
   | "emoticon-excited-outline"
@@ -44,6 +47,8 @@ type FormData = {
 export default function DiarioHumorScreen() {
   const { registros, isLoading, criar, atualizar, deletar, criando } = useDiario();
   const [editandoId, setEditandoId] = useState<number | null>(null);
+  const { usuario } = useUsuarioMe();
+  const { enviarRegistro } = useRelatorioSemanal(usuario?.id ?? null);
 
   const { control, handleSubmit, reset, clearErrors, setValue, formState: { errors } } =
     useForm<FormData>({
@@ -64,6 +69,20 @@ export default function DiarioHumorScreen() {
         setEditandoId(null);
       } else {
         await criar(dto);
+
+        // APEX
+        if (usuario?.id) {
+          try {
+            await enviarRegistro({
+              usuario_id: usuario.id,
+              humor: data.humor,
+              detalhes: data.detalhes,
+            });
+          } catch (e) {
+            console.log("Erro ao enviar para APEX:", e);
+          }
+        }
+
         Alert.alert("Sucesso", "Registro salvo!");
       }
       reset({ humor: "", atividades: [], detalhes: "" });
