@@ -9,7 +9,6 @@ const HABITOS_FIXOS = [
   { atividade: "Sono", unidade: "horas", icone: "sleep" as const },
   { atividade: "Água", unidade: "copos", icone: "cup-water" as const },
   { atividade: "Exercício", unidade: "minutos", icone: "run" as const },
-  { atividade: "Tempo de tela", unidade: "horas", icone: "cellphone" as const },
   { atividade: "Estudo", unidade: "horas", icone: "book-open-variant" as const },
 ];
 

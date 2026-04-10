@@ -23,11 +23,34 @@ type FormData = {
 };
 
 const HABITOS_FIXOS = [
-  { atividade: "Sono", unidade: "horas", icone: "sleep" as const },
-  { atividade: "Água", unidade: "copos", icone: "cup-water" as const },
-  { atividade: "Exercício", unidade: "minutos", icone: "run" as const },
-  { atividade: "Tempo de tela", unidade: "horas", icone: "cellphone" as const },
-  { atividade: "Estudo", unidade: "horas", icone: "book-open-variant" as const },
+  {
+    atividade: "Sono",
+    unidade: "horas",
+    icone: "sleep" as const,
+    minValor: 1,
+    maxValor: 12,
+  },
+  {
+    atividade: "Água",
+    unidade: "copos",
+    icone: "cup-water" as const,
+    minValor: 1,
+    maxValor: 20,
+  },
+  {
+    atividade: "Exercício",
+    unidade: "minutos",
+    icone: "run" as const,
+    minValor: 1,
+    maxValor: 300,
+  },
+  {
+    atividade: "Estudo",
+    unidade: "horas",
+    icone: "book-open-variant" as const,
+    minValor: 1,
+    maxValor: 12,
+  },
 ];
 
 function formatarDataHora(dataIso: string) {
@@ -100,10 +123,26 @@ export default function HabitosScreen() {
       return;
     }
 
-    const valorNumerico = Number(data.valor.replace(",", "."));
+    const valorNumerico = Number(data.valor);
 
-    if (Number.isNaN(valorNumerico) || valorNumerico <= 0) {
+    if (Number.isNaN(valorNumerico)) {
       Alert.alert("Erro", "Digite um valor numérico válido.");
+      return;
+    }
+
+    if (valorNumerico < habitoInfo.minValor) {
+      Alert.alert(
+        "Erro",
+        `O valor mínimo para ${habitoInfo.atividade} é ${habitoInfo.minValor} ${habitoInfo.unidade}.`,
+      );
+      return;
+    }
+
+    if (valorNumerico > habitoInfo.maxValor) {
+      Alert.alert(
+        "Erro",
+        `O valor máximo para ${habitoInfo.atividade} é ${habitoInfo.maxValor} ${habitoInfo.unidade}.`,
+      );
       return;
     }
 
@@ -217,8 +256,12 @@ export default function HabitosScreen() {
         />
 
         <Text style={styles.label}>
-          Valor {habitoSelecionado ? `(${habitoSelecionado.unidade})` : ""}
+          Valor{" "}
+          {habitoSelecionado
+            ? `(${habitoSelecionado.unidade} • mínimo ${habitoSelecionado.minValor} • máximo ${habitoSelecionado.maxValor})`
+            : ""}
         </Text>
+
         <Controller
           control={control}
           name="valor"
@@ -227,13 +270,35 @@ export default function HabitosScreen() {
             <View>
               <TextInput
                 style={styles.input}
-                placeholder="Ex: 7"
+                placeholder={
+                  habitoSelecionado
+                    ? `De ${habitoSelecionado.minValor} a ${habitoSelecionado.maxValor} ${habitoSelecionado.unidade}`
+                    : "Digite um valor"
+                }
                 placeholderTextColor={colors.textoSecundario}
                 keyboardType="numeric"
                 value={value}
                 onChangeText={(text) => {
-                  onChange(text);
-                  clearErrors("valor");
+                  const somenteNumeros = text.replace(/\D/g, "").slice(0, 3);
+
+                  if (!habitoSelecionado) {
+                    onChange(somenteNumeros);
+                    clearErrors("valor");
+                    return;
+                  }
+
+                  if (somenteNumeros === "") {
+                    onChange("");
+                    clearErrors("valor");
+                    return;
+                  }
+
+                  const numero = Number(somenteNumeros);
+
+                  if (numero <= habitoSelecionado.maxValor) {
+                    onChange(somenteNumeros);
+                    clearErrors("valor");
+                  }
                 }}
               />
               {errors.valor && (
