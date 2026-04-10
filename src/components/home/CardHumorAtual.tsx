@@ -20,7 +20,7 @@ export default function CardHumorAtual() {
     Feliz: { titulo: "Feliz e positivo", subtitulo: "Seu último registro indica um estado emocional leve e positivo.", icone: "emoji-happy" as const, cor: "#007bff" },
     Neutro: { titulo: "Equilibrado e estável", subtitulo: "Seu último registro mostra um humor mais neutro e estável.", icone: "emoji-neutral" as const, cor: "#f4a261" },
     Infeliz: { titulo: "Um pouco desanimado", subtitulo: "Seu último registro sugere um momento de baixa motivação ou cansaço.", icone: "emoji-sad" as const, cor: "#e76f51" },
-    Triste: { titulo: "Mais sensível hoje", subtitulo: "Seu último registro indica um estado emocional mais delicado.", icone: "emoji-sad" as const, cor: "#e63946" },
+    Triste: { titulo: "Mais sensível", subtitulo: "Seu último registro indica um estado emocional mais delicado.", icone: "emoji-sad" as const, cor: "#e63946" },
   };
 
   const humorAtual = mapaHumor[ultimo.humor as keyof typeof mapaHumor] ?? { titulo: ultimo.humor, subtitulo: "Seu último registro indica como você está se sentindo no momento.", icone: "emoji-neutral" as const, cor: "#007bff" };
