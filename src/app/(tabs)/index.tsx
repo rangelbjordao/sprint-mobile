@@ -7,6 +7,7 @@ import { useTheme } from "@/context/ThemeContext";
 import { LIGHT } from "@/constants/colors";
 import React from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
+import CardHabitosAtuais from "@/components/home/CardHabitosAtuais";
 
 const IndexScreen = () => {
   const { nome } = useAuthContext();
@@ -21,6 +22,7 @@ const IndexScreen = () => {
 
       <View style={styles.card}><CardHumorAtual /></View>
       <View style={styles.card}><CardRecomendacao /></View>
+      <View style={styles.card}><CardHabitosAtuais /></View>
       <View style={styles.card}><CardHumorSemana /></View>
       <View style={styles.card}><CardRelatorioApex /></View>
     </ScrollView>
