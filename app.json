@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "my-app",
-    "slug": "my-app",
+    "name": "EmotiWave",
+    "slug": "EmotiWave",
     "version": "1.0.0",
     "scheme": "emotiwave",
     "orientation": "portrait",
