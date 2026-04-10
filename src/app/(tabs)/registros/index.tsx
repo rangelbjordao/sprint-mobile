@@ -26,6 +26,13 @@ const RegistrosScreen = () => {
         title="Resumo Musical"
         description="Veja suas músicas mais ouvidas recentemente."
       />
+
+      <CardNavegacao
+        href="/(tabs)/registros/habitos"
+        icon={<FontAwesome5 name="check-circle" size={32} color="#6C63FF" />}
+        title="Hábitos Diários"
+        description="Registre atividades do dia a dia para acompanhar sua rotina."
+      />
     </ScrollView>
   );
 };
