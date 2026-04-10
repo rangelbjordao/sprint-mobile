@@ -18,18 +18,36 @@ export default function CardHumorSemana() {
     if (valor <= 70) return <MaterialCommunityIcons name="emoticon-neutral-outline" size={32} color="#F4A261" />;
     return <MaterialCommunityIcons name="emoticon-happy-outline" size={32} color="#2A9D8F" />;
   };
-
   const agora = new Date();
-  const inicioPeriodo = new Date(agora); inicioPeriodo.setDate(agora.getDate() - 6); inicioPeriodo.setHours(0, 0, 0, 0);
-  const fimDeHoje = new Date(agora); fimDeHoje.setHours(23, 59, 59, 999);
 
-  const registrosUltimos7Dias = registros.filter((r) => { const d = new Date(r.criadoEm); return d >= inicioPeriodo && d <= fimDeHoje; });
+  const ultimos7Dias = Array.from({ length: 7 }, (_, index) => {
+    const data = new Date(agora);
+    data.setDate(agora.getDate() - (6 - index));
+    data.setHours(0, 0, 0, 0);
+    return data;
+  });
 
-  const humorSemana = diasSemana.map((nomeDia, diaIndex) => {
-    const registrosDoDia = registrosUltimos7Dias.filter((r) => new Date(r.criadoEm).getDay() === diaIndex);
+  const humorSemana = ultimos7Dias.map((dataBase) => {
+    const inicioDia = new Date(dataBase);
+    const fimDia = new Date(dataBase);
+    fimDia.setHours(23, 59, 59, 999);
+
+    const registrosDoDia = registros.filter((r) => {
+      const dataRegistro = new Date(r.criadoEm);
+      return dataRegistro >= inicioDia && dataRegistro <= fimDia;
+    });
+
     const valores = registrosDoDia.map((r) => mapaHumorValor[r.humor] ?? 55);
-    const valor = valores.length > 0 ? Math.round(valores.reduce((a, b) => a + b, 0) / valores.length) : 0;
-    return { dia: nomeDia, valor };
+
+    const valor =
+      valores.length > 0
+        ? Math.round(valores.reduce((a, b) => a + b, 0) / valores.length)
+        : 0;
+
+    return {
+      dia: diasSemana[dataBase.getDay()],
+      valor,
+    };
   });
 
   if (isLoading) return <View><Text style={styles.cardTitle}>Evolução do Humor na Semana</Text><Text style={styles.textoAuxiliar}>Carregando dados da semana...</Text></View>;
