@@ -8,10 +8,9 @@ export type RelatorioSemanal = {
 };
 
 export const ApexService = {
-  buscarRelatorio: async (): Promise<RelatorioSemanal> => {
+  buscarRelatorio: async (): Promise<RelatorioSemanal | null> => {
     const response = await api.get("/humor/relatorio-semanal");
-    const items = response.data?.items;
-    return items?.[0] ?? null;
+    return response.data ?? null;
   },
 };
 
