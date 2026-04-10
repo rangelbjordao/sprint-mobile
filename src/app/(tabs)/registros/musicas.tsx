@@ -24,7 +24,7 @@ const RegistroMusicasScreen = () => {
   if (!connected) {
     return (
       <View style={[styles.container, styles.centered]}>
-        <Text style={styles.title}>Análise Musical</Text>
+        <Text style={styles.title}><Text style={styles.title}>Resumo Musical</Text></Text>
         <Text style={styles.textoCentral}>Conecte sua conta do Spotify para visualizar suas músicas mais ouvidas.</Text>
         <TouchableOpacity style={styles.botao} onPress={connect} disabled={spotifyLoading}>
           <Text style={styles.botaoTexto}>{spotifyLoading ? "Conectando..." : "Conectar Spotify"}</Text>
@@ -36,7 +36,7 @@ const RegistroMusicasScreen = () => {
   if (error) {
     return (
       <View style={[styles.container, styles.centered]}>
-        <Text style={styles.title}>Análise Musical</Text>
+        <Text style={styles.title}><Text style={styles.title}>Resumo Musical</Text></Text>
         <Text style={styles.textoErro}>{error instanceof Error ? error.message : "Erro ao carregar músicas."}</Text>
         <TouchableOpacity style={styles.botao} onPress={recarregar}>
           <Text style={styles.botaoTexto}>Tentar novamente</Text>
@@ -47,7 +47,7 @@ const RegistroMusicasScreen = () => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Análise Musical</Text>
+      <Text style={styles.title}><Text style={styles.title}>Resumo Musical</Text></Text>
       <Text style={styles.sectionTitle}>Músicas Mais Ouvidas</Text>
       {musicas.length === 0 ? (
         <Text style={styles.textoVazio}>Nenhuma música encontrada para este usuário.</Text>

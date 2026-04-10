@@ -80,7 +80,7 @@ export default function DiarioHumorScreen() {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Diário</Text>
+      <Text style={styles.title}>Diário de Humor</Text>
 
       <View style={styles.card}>
         <Text style={styles.cardTitle}>{editandoId ? "Editar Registro" : "Como você está se sentindo hoje?"}</Text>

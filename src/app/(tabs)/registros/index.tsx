@@ -23,8 +23,8 @@ const RegistrosScreen = () => {
       <CardNavegacao
         href="/(tabs)/registros/musicas"
         icon={<FontAwesome5 name="spotify" size={32} color="#1DB954" />}
-        title="Análise de Músicas"
-        description="Veja a energia e positividade das suas playlists."
+        title="Resumo Musical"
+        description="Veja suas músicas mais ouvidas recentemente."
       />
     </ScrollView>
   );
