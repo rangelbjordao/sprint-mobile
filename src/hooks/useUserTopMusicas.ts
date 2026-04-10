@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import UserMusicService, { MusicaUsuario } from "@/services/userMusicService";
 
-export function useUserTopMusicas(limit = 5) {
+export function useUserTopMusicas(limit = 10) {
   const query = useQuery<MusicaUsuario[]>({
     queryKey: ["top-musicas", limit],
     queryFn: () => UserMusicService.buscarTopMusicasSpotify(limit),

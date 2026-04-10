@@ -8,7 +8,7 @@ export type MusicaUsuario = {
 };
 
 export const UserMusicService = {
-  async buscarTopMusicasSpotify(limit = 5): Promise<MusicaUsuario[]> {
+  async buscarTopMusicasSpotify(limit = 10): Promise<MusicaUsuario[]> {
     const response = await api.get(
       `/usuarios/musicas/spotify/top?limit=${limit}`,
     );
