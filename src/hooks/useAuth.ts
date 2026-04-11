@@ -17,7 +17,6 @@ export const useAuth = () => {
     setError(null);
     try {
       const response = await api.post("/auth", { email, password });
-      console.log("LOGIN RESPONSE:", response.data);
 
       const jwt = response.data?.tokenJWT;
       const nomeUsuario =
