@@ -24,6 +24,10 @@ export function useDiario() {
         ["humor"],
         (old = []) => [novoRegistro, ...old],
       );
+
+      queryClient.invalidateQueries({
+        queryKey: ["relatorio-semanal"],
+      });
     },
   });
 
@@ -36,6 +40,10 @@ export function useDiario() {
           registro.id === registroAtualizado.id ? registroAtualizado : registro,
         ),
       );
+
+      queryClient.invalidateQueries({
+        queryKey: ["relatorio-semanal"],
+      });
     },
   });
 
@@ -62,6 +70,10 @@ export function useDiario() {
 
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["humor"] });
+
+      queryClient.invalidateQueries({
+        queryKey: ["relatorio-semanal"],
+      });
     },
   });
 
