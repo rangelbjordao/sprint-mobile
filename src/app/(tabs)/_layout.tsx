@@ -54,6 +54,12 @@ export default function TabsLayout() {
           tabBarIcon: ({ color, size }) => <Feather name="settings" color={color} size={size} />,
         }}
       />
+      <Tabs.Screen
+        name="sobre"
+        options={{
+          href: null,
+        }}
+      />
     </Tabs>
   );
 }

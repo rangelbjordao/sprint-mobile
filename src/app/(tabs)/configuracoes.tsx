@@ -4,7 +4,7 @@ import { useTheme } from "@/context/ThemeContext";
 import { useAuth } from "@/hooks/useAuth";
 import { useSpotifyAuth } from "@/hooks/useSpotifyAuth";
 import { LIGHT } from "@/constants/colors";
-import { Redirect } from "expo-router";
+import { Redirect, router } from "expo-router";
 import React, { useEffect } from "react";
 import {
   KeyboardAvoidingView, Platform, ScrollView,
@@ -45,6 +45,17 @@ const ConfiguracoesScreen = () => {
             <Text style={styles.buttonText}>Sair da conta</Text>
           </TouchableOpacity>
         </Card>
+
+        <Card style={colors}>
+          <Text style={styles.cardTitle}>Informações</Text>
+
+          <TouchableOpacity
+            style={styles.buttonSobre}
+            onPress={() => router.push("/sobre")}
+          >
+            <Text style={styles.buttonText}>Sobre o App</Text>
+          </TouchableOpacity>
+        </Card>
       </ScrollView>
     </KeyboardAvoidingView>
   );
@@ -60,4 +71,11 @@ const makeStyles = (colors: typeof LIGHT) => StyleSheet.create({
   temaTexto: { fontSize: 16, color: colors.texto },
   buttonLogout: { backgroundColor: colors.danger, paddingVertical: 12, borderRadius: 10, alignItems: "center", marginTop: 10 },
   buttonText: { color: "#FFF", fontSize: 16, fontWeight: "bold" },
+  buttonSobre: {
+    backgroundColor: colors.primary,
+    paddingVertical: 12,
+    borderRadius: 10,
+    alignItems: "center",
+    marginBottom: 10,
+  },
 });

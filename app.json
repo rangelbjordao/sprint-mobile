@@ -3,6 +3,9 @@
     "name": "EmotiWave",
     "slug": "EmotiWave",
     "version": "1.0.0",
+    "extra": {
+      "commitHash": "22e40cd"
+    },
     "scheme": "emotiwave",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
