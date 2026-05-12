@@ -2,10 +2,11 @@ import { AuthProvider, useAuthContext } from "@/context/AuthContext";
 import { ThemeProvider, useTheme } from "@/context/ThemeContext";
 import { wakeUpApi } from "@/services/wakeUpApi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Slot } from "expo-router";
+import { router, Slot } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
-import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, LogBox, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import * as Notifications from "expo-notifications";
 
 const queryClient = new QueryClient();
 
@@ -25,6 +26,15 @@ function RootNavigator() {
   useEffect(() => {
     verificarApi();
   }, [verificarApi]);
+
+  useEffect(() => {
+    const subscription =
+      Notifications.addNotificationResponseReceivedListener(() => {
+        router.push("/(tabs)");
+      });
+
+    return () => subscription.remove();
+  }, []);
 
   if (token === undefined || !apiChecked) {
     return (
@@ -60,6 +70,8 @@ function RootNavigator() {
     </SafeAreaView>
   );
 }
+
+LogBox.ignoreLogs(['expo-notifications: Android Push notifications']);
 
 export default function RootLayout() {
   return (

@@ -4,6 +4,7 @@ import {
   RegistroHumorRequest,
   RegistroHumorResponse,
 } from "@/services/diarioService";
+import { notificarRelatorioAtualizado } from "@/services/notificationService";
 
 export function useDiario() {
   const queryClient = useQueryClient();
@@ -19,7 +20,7 @@ export function useDiario() {
 
   const criarMutation = useMutation({
     mutationFn: (dto: RegistroHumorRequest) => DiarioService.criar(dto),
-    onSuccess: (novoRegistro) => {
+    onSuccess: async (novoRegistro) => {
       queryClient.setQueryData<RegistroHumorResponse[]>(
         ["humor"],
         (old = []) => [novoRegistro, ...old],
@@ -28,6 +29,8 @@ export function useDiario() {
       queryClient.invalidateQueries({
         queryKey: ["relatorio-semanal"],
       });
+
+      await notificarRelatorioAtualizado();
     },
   });
 
