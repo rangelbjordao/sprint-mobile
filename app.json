@@ -4,7 +4,11 @@
     "slug": "EmotiWave",
     "version": "1.0.0",
     "extra": {
-      "commitHash": "94a4fdd"
+      "commitHash": "94a4fdd",
+      "router": {},
+      "eas": {
+        "projectId": "bb8dbee6-626a-4d56-8788-9c25d2979e65"
+      }
     },
     "scheme": "emotiwave",
     "orientation": "portrait",
@@ -32,7 +36,8 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "useNextNotificationsApi": true
+      "useNextNotificationsApi": true,
+      "package": "com.rangel.emotiwave"
     },
     "web": {
       "favicon": "./assets/favicon.png"
