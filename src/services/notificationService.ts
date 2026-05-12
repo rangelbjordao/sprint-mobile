@@ -59,6 +59,6 @@ export const notificarRelatorioAtualizado = async () => {
       trigger: null,
     });
   } catch (error) {
-    console.log("Erro ao disparar notificação:", error);
+    console.error("Erro ao disparar notificação:", error);
   }
 };
