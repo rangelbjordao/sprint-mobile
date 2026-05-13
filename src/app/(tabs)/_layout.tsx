@@ -1,7 +1,7 @@
-import { Feather } from "@expo/vector-icons";
-import { Redirect, Tabs, useRouter } from "expo-router";
 import { useAuthContext } from "@/context/AuthContext";
 import { useTheme } from "@/context/ThemeContext";
+import { Feather } from "@expo/vector-icons";
+import { Redirect, Tabs, useRouter } from "expo-router";
 
 export default function TabsLayout() {
   const { token } = useAuthContext();
@@ -25,7 +25,7 @@ export default function TabsLayout() {
           const tabName = e.target?.toString();
           if (tabName?.includes("registros")) {
             e.preventDefault();
-            router.replace("/(tabs)/registros");
+            router.navigate("/(tabs)/registros");
           }
         },
       }}
