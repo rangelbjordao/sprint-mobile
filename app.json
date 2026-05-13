@@ -32,12 +32,16 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#EAF6FF"
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
       "useNextNotificationsApi": true,
       "package": "com.rangel.emotiwave"
+    },
+    "notification": {
+      "icon": "./assets/notification-icon.png",
+      "color": "#4285ff"
     },
     "web": {
       "favicon": "./assets/favicon.png"
