@@ -8,13 +8,12 @@ import { Controller, useForm } from "react-hook-form";
 import {
   ActivityIndicator,
   Alert,
-  Button,
   ScrollView,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
 
 type FormData = {
@@ -308,20 +307,18 @@ export default function HabitosScreen() {
           )}
         />
 
-        <Button
-          title={
-            editandoId
-              ? atualizando
-                ? "Atualizando..."
-                : "Atualizar Registro"
-              : criando
-                ? "Salvando..."
-                : "Salvar Registro"
-          }
+        <TouchableOpacity
           onPress={handleSubmit(onSubmit)}
-          color={colors.primary}
           disabled={salvandoOuAtualizando}
-        />
+          activeOpacity={0.7}
+          style={[styles.botaoSalvar, salvandoOuAtualizando && styles.botaoSalvarDesabilitado]}
+        >
+          <Text style={styles.botaoSalvarTexto}>
+            {editandoId
+              ? atualizando ? "Atualizando..." : "Atualizar Registro"
+              : criando ? "Salvando..." : "Salvar Registro"}
+          </Text>
+        </TouchableOpacity>
 
         {editandoId && !salvandoOuAtualizando && (
           <TouchableOpacity
@@ -534,5 +531,19 @@ const makeStyles = (colors: typeof LIGHT) =>
     botaoCancelarTexto: {
       color: colors.danger,
       fontSize: 14,
+    },
+    botaoSalvar: {
+      backgroundColor: colors.primary,
+      paddingVertical: 12,
+      borderRadius: 10,
+      alignItems: 'center',
+    },
+    botaoSalvarDesabilitado: {
+      backgroundColor: colors.textoSecundario,
+    },
+    botaoSalvarTexto: {
+      color: '#fff',
+      fontWeight: 'bold',
+      fontSize: 16,
     },
   });

@@ -1,9 +1,9 @@
 import Card from "@/components/configuracoes/Card";
 import SpotifyConnect from "@/components/configuracoes/spotifyConnect";
+import { LIGHT } from "@/constants/colors";
 import { useTheme } from "@/context/ThemeContext";
 import { useAuth } from "@/hooks/useAuth";
 import { useSpotifyAuth } from "@/hooks/useSpotifyAuth";
-import { LIGHT } from "@/constants/colors";
 import { Redirect, router } from "expo-router";
 import React, { useEffect } from "react";
 import {
@@ -76,6 +76,5 @@ const makeStyles = (colors: typeof LIGHT) => StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 10,
     alignItems: "center",
-    marginBottom: 10,
   },
 });
