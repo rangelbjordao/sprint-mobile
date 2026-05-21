@@ -54,7 +54,6 @@ const HABITOS_FIXOS = [
 
 function formatarDataHora(dataIso: string) {
   return new Date(dataIso).toLocaleString("pt-BR", {
-    timeZone: "America/Sao_Paulo",
     day: "2-digit",
     month: "2-digit",
     year: "numeric",
@@ -150,6 +149,7 @@ export default function HabitosScreen() {
       valor: valorNumerico,
       unidade: habitoInfo.unidade,
       dataRegistro: formatarDataHoje(),
+      criadoEm: new Date().toISOString(),
     };
 
     try {
@@ -388,8 +388,7 @@ export default function HabitosScreen() {
                 <Text style={styles.historicoDataRegistro}>
                   Data do registro:{" "}
                   {new Date(`${habito.dataRegistro}T00:00:00`).toLocaleDateString(
-                    "pt-BR",
-                    { timeZone: "America/Sao_Paulo" },
+                    "pt-BR"
                   )}
                 </Text>
               </View>

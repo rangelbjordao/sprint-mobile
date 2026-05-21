@@ -5,6 +5,7 @@ export type HabitoRequest = {
   valor: number;
   unidade: string;
   dataRegistro: string;
+  criadoEm: string;
 };
 
 export type HabitoResponse = {

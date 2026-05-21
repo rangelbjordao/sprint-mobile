@@ -4,6 +4,7 @@ export type RegistroHumorRequest = {
   humor: string;
   atividades: string[];
   detalhes: string;
+  criadoEm: string;
 };
 
 export type RegistroHumorResponse = {

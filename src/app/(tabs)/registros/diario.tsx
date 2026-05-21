@@ -38,7 +38,12 @@ export default function DiarioHumorScreen() {
     useForm<FormData>({ defaultValues: { humor: "", atividades: [], detalhes: "" } });
 
   const onSubmit = async (data: FormData) => {
-    const dto: RegistroHumorRequest = { humor: data.humor, atividades: data.atividades, detalhes: data.detalhes };
+    const dto: RegistroHumorRequest = {
+      humor: data.humor,
+      atividades: data.atividades,
+      detalhes: data.detalhes,
+      criadoEm: new Date().toISOString()
+    };
     try {
       if (editandoId !== null) {
         await atualizar({ id: editandoId, dto });
@@ -49,12 +54,12 @@ export default function DiarioHumorScreen() {
         reset({ humor: "", atividades: [], detalhes: "" });
         Alert.alert("Sucesso", "Registro salvo!", [{
           text: "OK",
-          onPress: () => {
-            queryClient.setQueryData<any[]>(["humor"], (old = []) => [
-              { id: Date.now(), humor: dto.humor, atividades: dto.atividades, detalhes: dto.detalhes, criadoEm: new Date().toISOString() },
-              ...old,
-            ]);
-            criar(dto);
+          onPress: async () => {
+            await criar(dto);
+
+            queryClient.invalidateQueries({
+              queryKey: ["humor"],
+            });
           },
         }]);
       }
@@ -165,7 +170,13 @@ export default function DiarioHumorScreen() {
                   <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
                     {humorItem && <MaterialCommunityIcons name={humorItem.icone} size={24} color={colors.primary} />}
                     <Text style={styles.dataHistorico}>
-                      {new Date(registro.criadoEm).toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo", day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" })}
+                      {new Date(registro.criadoEm).toLocaleString("pt-BR", {
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit"
+                      })}
                     </Text>
                   </View>
                   <View style={{ flexDirection: "row", gap: 8 }}>
